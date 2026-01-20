@@ -55,8 +55,10 @@ $$\text{Completion Percentage} = \left( \frac{\text{Completed Tasks}}{\text{Tota
 Update the `firebaseConfig` in `index.html` with your project credentials. Ensure your database URL matches your region:
 `https://your-project-id-default-rtdb.asia-southeast1.firebasedatabase.app`
 
-### 2. Security Rules
-Apply these rules in your Firebase Console to ensure data privacy:
+## 🛡️ Security Rules
+
+Apply these rules in your Firebase Console to ensure your task data remains private. Use a proper code block (shown below) so the text does not turn red:
+
 ```json
 {
   "rules": {
@@ -69,7 +71,9 @@ Apply these rules in your Firebase Console to ensure data privacy:
   }
 }
 
+```
 
+---
 ## 🚀 Deployment & Installation
 
 ### 1. GitHub Pages Hosting
@@ -94,4 +98,4 @@ To use this dashboard as a standalone app on your phone:
 * **Academic Background:** 1st Year B.Tech Computer Science & Engineering student at **Galgotias University**.
 * **Core Expertise:** Backend Developer focused on complex problem solving.
 * **Certifications:** Certified in C programming, Java basics, and Python basics.
-* **Content Creation:** Founder and creator of **"The Gen Mind"** YouTube channel.
+* **Content Creation:** Founder and creator of **"AQUAIMMORTAL"** YouTube channel.
