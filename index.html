@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Mission Control Pro</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%234a90e2%22/><path d=%22M30 50L45 65L70 35%22 stroke=%22white%22 stroke-width=%2210%22 fill=%22none%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/></svg>">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --primary: #4a90e2; --overdue: #ff4757; --today: #ffa502; --upcoming: #2ed573;
+            --bg: #f4f7f6; --card: #ffffff; --text: #2d3436; 
+            --cat-work: #4a90e2; --cat-home: #9b59b6; --cat-personal: #2ecc71; --cat-urgent: #e74c3c;
+        }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg); margin: 0; color: var(--text); overflow-x: hidden; }
+
+        /* Splash Screen */
+        #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; transition: 0.6s; }
+        .splash-logo { width: 80px; height: 80px; margin-bottom: 20px; animation: pulse 2s infinite ease-in-out; }
+        .loader-bar { width: 120px; height: 4px; background: #eee; border-radius: 10px; margin-top: 15px; overflow: hidden; }
+        .loader-progress { width: 40%; height: 100%; background: var(--primary); animation: slide 1.5s infinite ease-in-out; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        @keyframes slide { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
+        .hidden { opacity: 0; visibility: hidden; }
+
+        /* Auth Screen */
+        #auth-screen { display: none; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        .auth-card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); width: 320px; text-align: center; }
+        
+        /* Dashboard */
+        #app-dashboard { display: none; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        /* Layout & UI */
+        .header { background: white; padding: 20px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .progress-box { position: relative; width: 60px; height: 60px; }
+        .ring-fill { stroke: var(--primary); transition: stroke-dashoffset 0.5s; transform: rotate(-90deg); transform-origin: 50% 50%; }
+
+        .input-bar { background: white; padding: 20px; border-radius: 15px; display: grid; grid-template-columns: 2fr 1.2fr 1fr 1fr auto; gap: 10px; margin-bottom: 25px; }
+        input, select { padding: 12px; border: 2px solid #edeff2; border-radius: 10px; outline: none; font-family: inherit; width: 100%; box-sizing: border-box; }
+        .btn-add { background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; padding: 0 20px; }
+        
+        .board { display: grid; grid-template-columns: 1fr 1fr 1.5fr; gap: 20px; }
+        .col { background: #e2e6ea; padding: 15px; border-radius: 20px; min-height: 400px; }
+        .col h3 { margin: 0 0 15px 0; font-size: 1rem; display: flex; align-items: center; gap: 8px; }
+        
+        /* Task Styling */
+        li { background: white; padding: 12px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid var(--primary); }
+        .cat-work { border-left-color: var(--cat-work); }
+        .cat-home { border-left-color: var(--cat-home); }
+        .cat-personal { border-left-color: var(--cat-personal); }
+        .cat-urgent { border-left-color: var(--cat-urgent); }
+
+        .month-header { font-size: 0.8rem; font-weight: 600; color: var(--primary); text-transform: uppercase; margin: 15px 0 5px; border-bottom: 1px solid #ccc; }
+        .day-label { font-size: 0.75rem; font-weight: 600; color: #57606f; margin: 10px 0 5px 5px; display: block; }
+
+        @media (max-width: 900px) { .board, .input-bar { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+    <div id="splash-screen">
+        <svg class="splash-logo" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#4a90e2"/><path d="M30 50L45 65L70 35" stroke="white" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div style="color:var(--primary); font-weight:600;">MISSION CONTROL</div>
+        <div class="loader-bar"><div class="loader-progress"></div></div>
+    </div>
+
+    <div id="auth-screen">
+        <div class="auth-card">
+            <h2>Secure Access</h2>
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="password" placeholder="Password">
+            <button class="btn-primary" onclick="handleAuth()" style="background:var(--primary); color:white; border:none; padding:12px; border-radius:10px; width:100%; font-weight:600; margin-top:10px;">Login / Sign Up</button>
+        </div>
+    </div>
+
+    <div id="app-dashboard">
+        <div class="container">
+            <div class="header">
+                <div>
+                    <h2 style="margin:0; font-size: 1.5rem;">Mission Dashboard</h2>
+                    <div style="display: flex; gap: 10px; margin-top: 5px;">
+                        <button onclick="logout()" style="background:none; border:none; color:var(--primary); cursor:pointer; padding:0; font-size:12px;">Logout</button>
+                        <button onclick="downloadBackup()" style="background:none; border:none; color:var(--text); cursor:pointer; padding:0; font-size:12px; opacity: 0.6;">Backup Data</button>
+                    </div>
+                </div>
+                <div class="progress-box">
+                    <svg width="60" height="60">
+                        <circle stroke="#eee" stroke-width="4" fill="transparent" r="25" cx="30" cy="30"/>
+                        <circle id="fill" class="ring-fill" stroke-width="4" fill="transparent" r="25" cx="30" cy="30"/>
+                    </svg>
+                    <div id="pctText" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:12px; font-weight:600;">0%</div>
+                </div>
+            </div>
+
+            <div class="input-bar">
+                <input type="text" id="taskName" placeholder="New objective...">
+                <select id="taskCat">
+                    <option value="work">Work</option>
+                    <option value="home">Home</option>
+                    <option value="personal">Personal</option>
+                    <option value="urgent">Urgent</option>
+                </select>
+                <input type="date" id="taskDate">
+                <input type="time" id="taskTime">
+                <button class="btn-add" onclick="addTask()">Add</button>
+            </div>
+
+            <div class="board">
+                <div class="col"><h3 style="color:var(--overdue)">● Previous</h3><ul id="list-prev"></ul></div>
+                <div class="col"><h3 style="color:var(--today)">● Today</h3><ul id="list-today"></ul></div>
+                <div class="col"><h3 style="color:var(--upcoming)">● Upcoming</h3><div id="up-cont"></div></div>
+            </div>
+        </div>
+    </div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getDatabase, ref, set, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyA-mhIz79hzRvTbVZKeDPEfv2uv5jh-iSA",
+        authDomain: "task-list-tracker-e80d4.firebaseapp.com",
+        databaseURL: "https://task-list-tracker-e80d4-default-rtdb.asia-southeast1.firebasedatabase.app", 
+        projectId: "task-list-tracker-e80d4",
+        storageBucket: "task-list-tracker-e80d4.firebasestorage.app",
+        messagingSenderId: "918246411240",
+        appId: "1:918246411240:web:3f448eb1d0a6fc3f4fb25d",
+        measurementId: "G-G5XMT7T1W2"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+    let currentUser = null;
+    let allTasks = []; 
+
+    const ring = document.getElementById('fill');
+    const circumference = 25 * 2 * Math.PI;
+    ring.style.strokeDasharray = `${circumference} ${circumference}`;
+
+    // AUTH LOGIC
+    onAuthStateChanged(auth, (user) => {
+        setTimeout(() => {
+            document.getElementById('splash-screen').classList.add('hidden');
+            if (user) {
+                currentUser = user;
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('app-dashboard').style.display = 'block';
+                loadData();
+            } else {
+                document.getElementById('auth-screen').style.display = 'flex';
+                document.getElementById('app-dashboard').style.display = 'none';
+            }
+        }, 1200);
+    });
+
+    window.handleAuth = async () => {
+        const e = document.getElementById('email').value, p = document.getElementById('password').value;
+        if(!e || !p) return alert("Enter credentials");
+        try { await signInWithEmailAndPassword(auth, e, p); }
+        catch (err) { try { await createUserWithEmailAndPassword(auth, e, p); } catch(e2) { alert(e2.message); } }
+    };
+
+    window.logout = () => signOut(auth);
+
+    // DATA LOGIC
+    function loadData() {
+        onValue(ref(db, `users/${currentUser.uid}/tasks`), (snap) => {
+            const data = snap.val();
+            allTasks = data ? Object.keys(data).map(k => ({id: k, ...data[k]})) : [];
+            renderUI(allTasks);
+        });
+        setInterval(checkReminders, 30000); 
+    }
+
+    window.addTask = () => {
+        const name = document.getElementById('taskName').value;
+        const cat = document.getElementById('taskCat').value;
+        const date = document.getElementById('taskDate').value;
+        const time = document.getElementById('taskTime').value;
+        if(!name || !date) return alert("Required: Name & Date");
+        
+        set(ref(db, `users/${currentUser.uid}/tasks/${Date.now()}`), { 
+            name, cat, date, time, completed: false, reminded: false 
+        });
+        document.getElementById('taskName').value = '';
+    };
+
+    window.toggleTask = (id, cur) => update(ref(db, `users/${currentUser.uid}/tasks/${id}`), { completed: !cur });
+    window.deleteTask = (id) => remove(ref(db, `users/${currentUser.uid}/tasks/${id}`));
+
+    window.downloadBackup = () => {
+        const blob = new Blob([JSON.stringify(allTasks, null, 2)], { type: "application/json" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `backup_${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+    };
+
+    function renderUI(tasks) {
+        const todayStr = new Date().toISOString().split('T')[0];
+        const prev = document.getElementById('list-prev'), now = document.getElementById('list-today'), up = document.getElementById('up-cont');
+        prev.innerHTML = now.innerHTML = up.innerHTML = '';
+        
+        let curM = "", curD = "";
+        tasks.sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time)).forEach(t => {
+            const li = document.createElement('li');
+            li.className = `cat-${t.cat}`;
+            li.innerHTML = `
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <input type="checkbox" ${t.completed?'checked':''} onchange="toggleTask('${t.id}', ${t.completed})">
+                    <div style="${t.completed?'text-decoration:line-through;color:#aaa':''}">
+                        <b>${t.name}</b><br><small>${t.cat} | ${t.time || 'No Time'}</small>
+                    </div>
+                </div>
+                <button onclick="deleteTask('${t.id}')" style="background:none;border:none;color:red;cursor:pointer;">×</button>
+            `;
+            
+            if (t.date < todayStr) prev.appendChild(li);
+            else if (t.date === todayStr) now.appendChild(li);
+            else {
+                const dateObj = new Date(t.date);
+                const mName = dateObj.toLocaleString('default', { month: 'long', year: 'numeric' });
+                const dLabel = dateObj.toLocaleDateString('default', { weekday: 'short', day: 'numeric' });
+
+                if (mName !== curM) { 
+                    curM = mName; 
+                    const h = document.createElement('div'); h.className='month-header'; h.innerText=mName; up.appendChild(h); 
+                }
+                if (t.date !== curD) {
+                    curD = t.date;
+                    const d = document.createElement('span'); d.className='day-label'; d.innerText=dLabel; up.appendChild(d);
+                }
+                up.appendChild(li);
+            }
+        });
+
+        const pct = tasks.length ? Math.round((tasks.filter(t=>t.completed).length / tasks.length)*100) : 0;
+        document.getElementById('pctText').innerText = pct + "%";
+        ring.style.strokeDashoffset = circumference - (pct / 100 * circumference);
+    }
+
+    function checkReminders() {
+        const now = new Date();
+        const d = now.toISOString().split('T')[0], t = now.toTimeString().slice(0, 5);
+        allTasks.forEach(task => {
+            if (!task.completed && !task.reminded && task.date === d && task.time === t) {
+                update(ref(db, `users/${currentUser.uid}/tasks/${task.id}`), { reminded: true });
+                alert(`⏰ MISSION REMINDER: ${task.name}`);
+            }
+        });
+    }
+</script>
+</body>
+</html>
