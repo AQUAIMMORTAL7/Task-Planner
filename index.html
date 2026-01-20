@@ -35,12 +35,16 @@
         #app-dashboard { display: none; padding: 20px; }
         .container { max-width: 1200px; margin: 0 auto; }
         
-        /* Layout & UI */
         .header { background: white; padding: 20px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .progress-box { position: relative; width: 60px; height: 60px; }
         .ring-fill { stroke: var(--primary); transition: stroke-dashoffset 0.5s; transform: rotate(-90deg); transform-origin: 50% 50%; }
 
-        .input-bar { background: white; padding: 20px; border-radius: 15px; display: grid; grid-template-columns: 2fr 1.2fr 1fr 1fr auto; gap: 10px; margin-bottom: 25px; }
+        /* Controls */
+        .controls { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
+        .filter-btn { background: #fff; border: 1px solid var(--primary); color: var(--primary); padding: 5px 15px; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: 600; }
+        .filter-btn.active { background: var(--primary); color: #fff; }
+
+        .input-bar { background: white; padding: 20px; border-radius: 15px; display: grid; grid-template-columns: 2fr 1.2fr 1fr 1fr auto; gap: 10px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         input, select { padding: 12px; border: 2px solid #edeff2; border-radius: 10px; outline: none; font-family: inherit; width: 100%; box-sizing: border-box; }
         .btn-add { background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; padding: 0 20px; }
         
@@ -48,12 +52,16 @@
         .col { background: #e2e6ea; padding: 15px; border-radius: 20px; min-height: 400px; }
         .col h3 { margin: 0 0 15px 0; font-size: 1rem; display: flex; align-items: center; gap: 8px; }
         
-        /* Task Styling */
-        li { background: white; padding: 12px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid var(--primary); }
+        li { background: white; padding: 12px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid var(--primary); transition: 0.2s; }
         .cat-work { border-left-color: var(--cat-work); }
         .cat-home { border-left-color: var(--cat-home); }
         .cat-personal { border-left-color: var(--cat-personal); }
         .cat-urgent { border-left-color: var(--cat-urgent); }
+
+        .item-actions { display: flex; gap: 8px; }
+        .action-btn { background: none; border: none; cursor: pointer; font-size: 16px; transition: 0.2s; }
+        .archive-btn { color: var(--primary); }
+        .delete-btn { color: var(--overdue); }
 
         .month-header { font-size: 0.8rem; font-weight: 600; color: var(--primary); text-transform: uppercase; margin: 15px 0 5px; border-bottom: 1px solid #ccc; }
         .day-label { font-size: 0.75rem; font-weight: 600; color: #57606f; margin: 10px 0 5px 5px; display: block; }
@@ -74,7 +82,7 @@
             <h2>Secure Access</h2>
             <input type="email" id="email" placeholder="Email">
             <input type="password" id="password" placeholder="Password">
-            <button class="btn-primary" onclick="handleAuth()" style="background:var(--primary); color:white; border:none; padding:12px; border-radius:10px; width:100%; font-weight:600; margin-top:10px;">Login / Sign Up</button>
+            <button onclick="handleAuth()" style="background:var(--primary); color:white; border:none; padding:12px; border-radius:10px; width:100%; font-weight:600; margin-top:10px;">Login / Sign Up</button>
         </div>
     </div>
 
@@ -97,7 +105,12 @@
                 </div>
             </div>
 
-            <div class="input-bar">
+            <div class="controls">
+                <button class="filter-btn active" id="btn-active" onclick="setView('active')">Active Board</button>
+                <button class="filter-btn" id="btn-archived" onclick="setView('archived')">Archive Vault</button>
+            </div>
+
+            <div class="input-bar" id="input-container">
                 <input type="text" id="taskName" placeholder="New objective...">
                 <select id="taskCat">
                     <option value="work">Work</option>
@@ -111,9 +124,9 @@
             </div>
 
             <div class="board">
-                <div class="col"><h3 style="color:var(--overdue)">● Previous</h3><ul id="list-prev"></ul></div>
-                <div class="col"><h3 style="color:var(--today)">● Today</h3><ul id="list-today"></ul></div>
-                <div class="col"><h3 style="color:var(--upcoming)">● Upcoming</h3><div id="up-cont"></div></div>
+                <div class="col"><h3 id="col1-title" style="color:var(--overdue)">● Previous</h3><ul id="list-prev"></ul></div>
+                <div class="col"><h3 id="col2-title" style="color:var(--today)">● Today</h3><ul id="list-today"></ul></div>
+                <div class="col"><h3 id="col3-title" style="color:var(--upcoming)">● Upcoming</h3><div id="up-cont"></div></div>
             </div>
         </div>
     </div>
@@ -139,12 +152,12 @@
     const db = getDatabase(app);
     let currentUser = null;
     let allTasks = []; 
+    let currentView = 'active';
 
     const ring = document.getElementById('fill');
     const circumference = 25 * 2 * Math.PI;
     ring.style.strokeDasharray = `${circumference} ${circumference}`;
 
-    // AUTH LOGIC
     onAuthStateChanged(auth, (user) => {
         setTimeout(() => {
             document.getElementById('splash-screen').classList.add('hidden');
@@ -169,15 +182,21 @@
 
     window.logout = () => signOut(auth);
 
-    // DATA LOGIC
     function loadData() {
         onValue(ref(db, `users/${currentUser.uid}/tasks`), (snap) => {
             const data = snap.val();
             allTasks = data ? Object.keys(data).map(k => ({id: k, ...data[k]})) : [];
             renderUI(allTasks);
         });
-        setInterval(checkReminders, 30000); 
     }
+
+    window.setView = (view) => {
+        currentView = view;
+        document.getElementById('btn-active').classList.toggle('active', view === 'active');
+        document.getElementById('btn-archived').classList.toggle('active', view === 'archived');
+        document.getElementById('input-container').style.display = view === 'active' ? 'grid' : 'none';
+        renderUI(allTasks);
+    };
 
     window.addTask = () => {
         const name = document.getElementById('taskName').value;
@@ -185,14 +204,14 @@
         const date = document.getElementById('taskDate').value;
         const time = document.getElementById('taskTime').value;
         if(!name || !date) return alert("Required: Name & Date");
-        
         set(ref(db, `users/${currentUser.uid}/tasks/${Date.now()}`), { 
-            name, cat, date, time, completed: false, reminded: false 
+            name, cat, date, time, completed: false, archived: false
         });
         document.getElementById('taskName').value = '';
     };
 
     window.toggleTask = (id, cur) => update(ref(db, `users/${currentUser.uid}/tasks/${id}`), { completed: !cur });
+    window.archiveTask = (id, cur) => update(ref(db, `users/${currentUser.uid}/tasks/${id}`), { archived: !cur });
     window.deleteTask = (id) => remove(ref(db, `users/${currentUser.uid}/tasks/${id}`));
 
     window.downloadBackup = () => {
@@ -208,8 +227,15 @@
         const prev = document.getElementById('list-prev'), now = document.getElementById('list-today'), up = document.getElementById('up-cont');
         prev.innerHTML = now.innerHTML = up.innerHTML = '';
         
+        // Setup titles based on view
+        document.getElementById('col1-title').innerText = currentView === 'active' ? '● Previous' : '● Past Log';
+        document.getElementById('col2-title').innerText = currentView === 'active' ? '● Today' : '● Today Log';
+        document.getElementById('col3-title').innerText = currentView === 'active' ? '● Upcoming' : '● Future Log';
+
+        let filteredTasks = tasks.filter(t => currentView === 'archived' ? t.archived : !t.archived);
+
         let curM = "", curD = "";
-        tasks.sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time)).forEach(t => {
+        filteredTasks.sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time)).forEach(t => {
             const li = document.createElement('li');
             li.className = `cat-${t.cat}`;
             li.innerHTML = `
@@ -219,7 +245,10 @@
                         <b>${t.name}</b><br><small>${t.cat} | ${t.time || 'No Time'}</small>
                     </div>
                 </div>
-                <button onclick="deleteTask('${t.id}')" style="background:none;border:none;color:red;cursor:pointer;">×</button>
+                <div class="item-actions">
+                    <button class="action-btn archive-btn" onclick="archiveTask('${t.id}', ${t.archived})">${t.archived ? '📤' : '📥'}</button>
+                    <button class="action-btn delete-btn" onclick="deleteTask('${t.id}')">×</button>
+                </div>
             `;
             
             if (t.date < todayStr) prev.appendChild(li);
@@ -241,20 +270,11 @@
             }
         });
 
-        const pct = tasks.length ? Math.round((tasks.filter(t=>t.completed).length / tasks.length)*100) : 0;
+        const activeTotal = tasks.filter(t => !t.archived).length;
+        const activeDone = tasks.filter(t => !t.archived && t.completed).length;
+        const pct = activeTotal ? Math.round((activeDone / activeTotal) * 100) : 0;
         document.getElementById('pctText').innerText = pct + "%";
         ring.style.strokeDashoffset = circumference - (pct / 100 * circumference);
-    }
-
-    function checkReminders() {
-        const now = new Date();
-        const d = now.toISOString().split('T')[0], t = now.toTimeString().slice(0, 5);
-        allTasks.forEach(task => {
-            if (!task.completed && !task.reminded && task.date === d && task.time === t) {
-                update(ref(db, `users/${currentUser.uid}/tasks/${task.id}`), { reminded: true });
-                alert(`⏰ MISSION REMINDER: ${task.name}`);
-            }
-        });
     }
 </script>
 </body>
