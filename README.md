@@ -68,3 +68,30 @@ Apply these rules in your Firebase Console to ensure data privacy:
     }
   }
 }
+
+
+## 🚀 Deployment & Installation
+
+### 1. GitHub Pages Hosting
+* **Upload:** Add your `index.html` file to your GitHub repository.
+* **Navigate:** Go to the **Settings** tab of your repository and select **Pages** from the left sidebar.
+* **Deploy:** Under the "Build and deployment" section, set the branch to `main` and click **Save**.
+
+
+
+### 2. Mobile Installation
+To use this dashboard as a standalone app on your phone:
+* **Open:** Visit your live GitHub Pages URL in your mobile browser.
+* **iOS (Safari):** Tap the **Share** icon and select **Add to Home Screen**.
+* **Android (Chrome):** Tap the **Three Dots** menu and select **Add to Home Screen**.
+
+
+
+---
+
+## 👨‍💻 About the Developer
+
+* **Academic Background:** 1st Year B.Tech Computer Science & Engineering student at **Galgotias University**.
+* **Core Expertise:** Backend Developer focused on complex problem solving.
+* **Certifications:** Certified in C programming, Java basics, and Python basics.
+* **Content Creation:** Founder and creator of **"The Gen Mind"** YouTube channel.
