@@ -30,7 +30,7 @@
 ### 📥 Archive Vault
 * Move completed or outdated tasks to a dedicated **Archive Vault**.
 * Keeps your main board clean while preserving a history of your accomplishments.
-
+* **Smart Archive Cleanup** Automatically removes tasks from the Archive Vault once they have been stored for more than 30 days. The countdown begins the moment a task is moved to the archive, ensuring your database remains lean and performant.
 ### 📊 Visual Analytics
 * Dynamic circular progress ring that visualizes your completion rate.
 * Real-time calculation of active vs. completed tasks.
