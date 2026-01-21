@@ -5,64 +5,85 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Mission Control Pro</title>
     
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%234a90e2%22/><path d=%22M30 50L45 65L70 35%22 stroke=%22white%22 stroke-width=%2210%22 fill=%22none%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/></svg>">
-
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root { 
-            --primary: #4a90e2; --overdue: #ff4757; --today: #ffa502; --upcoming: #2ed573;
-            --bg: #f4f7f6; --card: #ffffff; --text: #2d3436; 
-            --cat-work: #4a90e2; --cat-home: #9b59b6; --cat-personal: #2ecc71; --cat-urgent: #e74c3c;
+            --primary: #6c5ce7; --secondary: #a29bfe; --overdue: #ff7675; --today: #fab1a0;
+            --bg-gradient: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+            --glass: rgba(255, 255, 255, 0.9); --text: #2d3436; 
+            --cat-work: #0984e3; --cat-home: #6c5ce7; --cat-personal: #00b894; --cat-urgent: #d63031;
         }
-        body { font-family: 'Poppins', sans-serif; background-color: var(--bg); margin: 0; color: var(--text); overflow-x: hidden; }
+        
+        body { font-family: 'Poppins', sans-serif; background: #f0f2f5; margin: 0; color: var(--text); overflow-x: hidden; }
+
+        /* Auth Screen Styling */
+        #auth-screen { 
+            display: flex; height: 100vh; width: 100%;
+            background: var(--bg-gradient);
+            flex-direction: column; align-items: center; justify-content: center;
+        }
+        .auth-card { 
+            background: var(--glass); padding: 40px; border-radius: 24px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2); width: 340px; text-align: center;
+            backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3);
+        }
+        .auth-card h2 { margin-bottom: 5px; color: var(--primary); font-weight: 600; }
+        .subtitle { font-size: 13px; color: #636e72; margin-bottom: 25px; }
+        .auth-input { 
+            width: 100%; padding: 14px; margin-bottom: 15px; border-radius: 12px;
+            border: 2px solid transparent; background: #fff; outline: none;
+            transition: 0.3s; font-family: inherit; box-sizing: border-box;
+        }
+        .auth-input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(108, 92, 231, 0.2); }
+        .auth-input.invalid { border-color: var(--overdue); background: #fffafa; }
+        .btn-login { 
+            background: var(--primary); color: white; border: none; padding: 14px; 
+            border-radius: 12px; width: 100%; font-weight: 600; cursor: pointer;
+            transition: 0.3s; box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .btn-login:disabled { background: #b2bec3; cursor: not-allowed; }
+        .toggle-auth { margin-top: 20px; font-size: 13px; color: #2d3436; }
+        .toggle-auth span { color: var(--primary); cursor: pointer; font-weight: 600; text-decoration: underline; }
 
         /* Splash Screen */
-        #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; transition: 0.6s; }
-        .splash-logo { width: 80px; height: 80px; margin-bottom: 20px; animation: pulse 2s infinite ease-in-out; }
-        .loader-bar { width: 120px; height: 4px; background: #eee; border-radius: 10px; margin-top: 15px; overflow: hidden; }
-        .loader-progress { width: 40%; height: 100%; background: var(--primary); animation: slide 1.5s infinite ease-in-out; }
-        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-        @keyframes slide { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
-        .hidden { opacity: 0; visibility: hidden; }
+        #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; transition: 0.8s; }
+        .loader-bar { width: 140px; height: 5px; background: #f1f2f6; border-radius: 10px; margin-top: 20px; overflow: hidden; }
+        .loader-progress { width: 30%; height: 100%; background: var(--primary); animation: slide 1.5s infinite linear; }
+        @keyframes slide { from { transform: translateX(-100%); } to { transform: translateX(300%); } }
+        .hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
-        /* Auth Screen */
-        #auth-screen { display: none; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
-        .auth-card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); width: 320px; text-align: center; }
-        
-        /* Dashboard Layout */
+        /* Dashboard & Progress Meter Styles */
         #app-dashboard { display: none; padding: 20px; }
-        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: white; padding: 25px; border-radius: 24px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
         
-        .header { background: white; padding: 20px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .progress-box { position: relative; width: 60px; height: 60px; }
-        .ring-fill { stroke: var(--primary); transition: stroke-dashoffset 0.5s; transform: rotate(-90deg); transform-origin: 50% 50%; }
+        /* Circular Liquid Meter CSS */
+        .progress-container { position: relative; width: 80px; height: 80px; }
+        .progress-ring { transform: rotate(-90deg); }
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            stroke-linecap: round;
+            filter: drop-shadow(0 0 5px var(--primary));
+        }
+        .liquid-flow {
+            animation: flow 3s infinite linear;
+            stroke-dasharray: 10 5; /* Creates a flow segment look */
+        }
+        @keyframes flow {
+            from { stroke-dashoffset: 200; }
+            to { stroke-dashoffset: 0; }
+        }
+        .pct-label {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 16px; font-weight: 600; color: var(--primary);
+        }
 
-        .controls { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
-        .filter-btn { background: #fff; border: 1px solid var(--primary); color: var(--primary); padding: 5px 15px; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: 600; }
-        .filter-btn.active { background: var(--primary); color: #fff; }
-
-        .input-bar { background: white; padding: 20px; border-radius: 15px; display: grid; grid-template-columns: 2fr 1.2fr 1fr 1fr auto; gap: 10px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        input, select { padding: 12px; border: 2px solid #edeff2; border-radius: 10px; outline: none; font-family: inherit; width: 100%; box-sizing: border-box; }
-        .btn-add { background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; padding: 0 20px; }
-        
-        .board { display: grid; grid-template-columns: 1fr 1fr 1.5fr; gap: 20px; }
-        .col { background: #e2e6ea; padding: 15px; border-radius: 20px; min-height: 400px; }
-        .col h3 { margin: 0 0 15px 0; font-size: 1rem; display: flex; align-items: center; gap: 8px; }
-        
-        li { background: white; padding: 12px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid var(--primary); transition: 0.2s; }
-        .cat-work { border-left-color: var(--cat-work); }
-        .cat-home { border-left-color: var(--cat-home); }
-        .cat-personal { border-left-color: var(--cat-personal); }
-        .cat-urgent { border-left-color: var(--cat-urgent); }
-
-        .item-actions { display: flex; gap: 8px; }
-        .action-btn { background: none; border: none; cursor: pointer; font-size: 16px; transition: 0.2s; }
-        .archive-btn { color: var(--primary); }
-        .delete-btn { color: var(--overdue); }
+        /* Rest of Dashboard */
+        .input-bar { background: white; padding: 20px; border-radius: 20px; display: grid; grid-template-columns: 2fr 1.2fr 1fr 1fr auto; gap: 12px; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
+        .board { display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 20px; }
+        .col { background: #ebedef; padding: 18px; border-radius: 24px; min-height: 450px; }
+        li { background: white; padding: 15px; border-radius: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 6px solid var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
 
         @media (max-width: 900px) { .board, .input-bar { grid-template-columns: 1fr; } }
     </style>
@@ -70,47 +91,57 @@
 <body>
 
     <div id="splash-screen">
-        <svg class="splash-logo" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#4a90e2"/><path d="M30 50L45 65L70 35" stroke="white" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <div style="color:var(--primary); font-weight:600;">MISSION CONTROL PRO</div>
+        <svg width="80" height="80" viewBox="0 0 100 100"><rect width="100" height="100" rx="25" fill="#6c5ce7"/><path d="M30 50L45 65L70 35" stroke="white" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div style="margin-top:20px; font-weight:600; letter-spacing:1px; color:var(--primary)">MISSION CONTROL PRO</div>
         <div class="loader-bar"><div class="loader-progress"></div></div>
     </div>
 
     <div id="auth-screen">
         <div class="auth-card">
-            <h2>Secure Access</h2>
-            <input type="email" id="email" placeholder="Email (use your account)">
-            <input type="password" id="password" placeholder="Password">
-            <button onclick="handleAuth()" style="background:var(--primary); color:white; border:none; padding:12px; border-radius:10px; width:100%; font-weight:600; margin-top:10px; cursor:pointer;">Login / Sign Up</button>
-            <p id="auth-error" style="color:var(--overdue); font-size:12px; margin-top:10px;"></p>
+            <h2 id="auth-title">Welcome Back</h2>
+            <p id="auth-subtitle" class="subtitle">Access your productivity command center</p>
+            <input type="text" id="username" class="auth-input" placeholder="Callsign (Username)">
+            <input type="password" id="password" class="auth-input" placeholder="Secure Password">
+            <button id="authBtn" class="btn-login" onclick="handleAuth()">LOGIN</button>
+            <p id="auth-error" style="color:var(--overdue); margin-top:15px; font-size: 12px; font-weight:600; line-height:1.4;"></p>
+            <div class="toggle-auth">
+                <p id="toggle-text">New operative? <span onclick="toggleAuthMode()">Request Access (Sign Up)</span></p>
+            </div>
         </div>
+        <p style="color:white; font-size:12px; margin-top:20px; opacity:0.8;">System Admin: Ankit, Galgotias University</p>
     </div>
 
     <div id="app-dashboard">
         <div class="container">
             <div class="header">
                 <div>
-                    <h2 style="margin:0; font-size: 1.5rem;">Mission Dashboard</h2>
-                    <div style="display: flex; gap: 10px; margin-top: 5px;">
-                        <button onclick="logout()" style="background:none; border:none; color:var(--primary); cursor:pointer; padding:0; font-size:12px;">Logout</button>
-                        <button onclick="downloadBackup()" style="background:none; border:none; color:var(--text); cursor:pointer; padding:0; font-size:12px; opacity: 0.6;">Backup Data</button>
-                    </div>
+                    <h2 style="margin:0; font-weight:600;">Command Center</h2>
+                    <button onclick="logout()" style="background:none; border:none; color:var(--primary); cursor:pointer; padding:5px 0; font-size:12px; font-weight:600;">Sign Out</button>
                 </div>
-                <div class="progress-box">
-                    <svg width="60" height="60">
-                        <circle stroke="#eee" stroke-width="4" fill="transparent" r="25" cx="30" cy="30"/>
-                        <circle id="fill" class="ring-fill" stroke-width="4" fill="transparent" r="25" cx="30" cy="30"/>
-                    </svg>
-                    <div id="pctText" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:12px; font-weight:600;">0%</div>
+                
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="text-align: right; line-height: 1;">
+                        <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.5;">Efficiency</div>
+                        <div style="font-size: 12px; font-weight: 600; color: var(--primary);">MISSION STATUS</div>
+                    </div>
+                    <div class="progress-container">
+                        <svg class="progress-ring" width="80" height="80">
+                            <circle stroke="#e6e6e6" stroke-width="8" fill="transparent" r="32" cx="40" cy="40"/>
+                            <circle id="progressCircle" class="progress-ring__circle" stroke="var(--primary)" stroke-width="8" fill="transparent" r="32" cx="40" cy="40" 
+                                style="stroke-dasharray: 201.06; stroke-dashoffset: 201.06;"/>
+                        </svg>
+                        <div id="pctLabel" class="pct-label">0%</div>
+                    </div>
                 </div>
             </div>
 
-            <div class="controls">
-                <button class="filter-btn active" id="btn-active" onclick="setView('active')">Active Board</button>
-                <button class="filter-btn" id="btn-archived" onclick="setView('archived')">Archive Vault</button>
+            <div style="display:flex; gap:10px; margin-bottom:20px; justify-content:center;">
+                <button id="btn-active" onclick="setView('active')" style="padding:8px 20px; border-radius:20px; border:none; cursor:pointer; background:var(--primary); color:white; font-weight:600;">ACTIVE</button>
+                <button id="btn-archived" onclick="setView('archived')" style="padding:8px 20px; border-radius:20px; border:none; cursor:pointer; background:#fff; color:var(--primary); font-weight:600;">ARCHIVE</button>
             </div>
 
             <div class="input-bar" id="input-container">
-                <input type="text" id="taskName" placeholder="New objective...">
+                <input type="text" id="taskName" placeholder="What is the mission?">
                 <select id="taskCat">
                     <option value="work">Work</option>
                     <option value="home">Home</option>
@@ -119,13 +150,13 @@
                 </select>
                 <input type="date" id="taskDate">
                 <input type="time" id="taskTime">
-                <button class="btn-add" onclick="addTask()">Add Task</button>
+                <button class="btn-add" onclick="addTask()" style="background:var(--primary); color:white; border:none; border-radius:12px; cursor:pointer; font-weight:600; padding:10px;">DEPLOY</button>
             </div>
 
             <div class="board">
-                <div class="col"><h3 id="col1-title" style="color:var(--overdue)">● Previous</h3><ul id="list-prev"></ul></div>
-                <div class="col"><h3 id="col2-title" style="color:var(--today)">● Today</h3><ul id="list-today"></ul></div>
-                <div class="col"><h3 id="col3-title" style="color:var(--upcoming)">● Upcoming</h3><div id="up-cont"></div></div>
+                <div class="col"><h3>⏳ PREVIOUS</h3><ul id="list-prev"></ul></div>
+                <div class="col"><h3>🚀 TODAY</h3><ul id="list-today"></ul></div>
+                <div class="col"><h3>📅 UPCOMING</h3><div id="up-cont"></div></div>
             </div>
         </div>
     </div>
@@ -133,30 +164,29 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getDatabase, ref, set, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getDatabase, ref, set, get, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-    // Your verified Firebase configuration
     const firebaseConfig = {
         apiKey: "AIzaSyA-mhIz79hzRvTbVZKeDPEfv2uv5jh-iSA",
         authDomain: "task-list-tracker-e80d4.firebaseapp.com",
         databaseURL: "https://task-list-tracker-e80d4-default-rtdb.asia-southeast1.firebasedatabase.app", 
         projectId: "task-list-tracker-e80d4",
-        storageBucket: "task-list-tracker-e80d4.firebasestorage.app",
-        messagingSenderId: "918246411240",
-        appId: "1:918246411240:web:3f448eb1d0a6fc3f4fb25d",
-        measurementId: "G-G5XMT7T1W2"
+        appId: "1:918246411240:web:3f448eb1d0a6fc3f4fb25d"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getDatabase(app);
-    let currentUser = null;
-    let allTasks = []; 
-    let currentView = 'active';
 
-    const ring = document.getElementById('fill');
-    const circumference = 25 * 2 * Math.PI;
-    ring.style.strokeDasharray = `${circumference} ${circumference}`;
+    let isLoginMode = true; 
+    let currentUser = null, allTasks = [], currentView = 'active';
+
+    window.toggleAuthMode = () => {
+        isLoginMode = !isLoginMode;
+        document.getElementById('auth-title').innerText = isLoginMode ? "Welcome Back" : "New Commission";
+        document.getElementById('authBtn').innerText = isLoginMode ? "LOGIN" : "SIGN UP";
+        document.getElementById('toggle-text').innerHTML = isLoginMode ? `New operative? <span onclick="toggleAuthMode()">Request Access (Sign Up)</span>` : `Existing operative? <span onclick="toggleAuthMode()">Authorized Login</span>`;
+    };
 
     onAuthStateChanged(auth, (user) => {
         setTimeout(() => {
@@ -174,20 +204,24 @@
     });
 
     window.handleAuth = async () => {
-        const e = document.getElementById('email').value, p = document.getElementById('password').value;
-        const errDisplay = document.getElementById('auth-error');
-        errDisplay.innerText = "";
-        if(!e || !p) return errDisplay.innerText = "Enter credentials";
-        
-        try { 
-            await signInWithEmailAndPassword(auth, e, p); 
-        } catch (err) { 
-            try { 
-                await createUserWithEmailAndPassword(auth, e, p); 
-            } catch(e2) { 
-                errDisplay.innerText = "Error: " + e2.message;
-            } 
+        const usernameInput = document.getElementById('username'), p = document.getElementById('password').value, errDisplay = document.getElementById('auth-error'), username = usernameInput.value;
+        errDisplay.innerText = ""; usernameInput.classList.remove('invalid');
+        if(!username || !p) return errDisplay.innerText = "Credentials required.";
+        if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+            usernameInput.classList.add('invalid');
+            errDisplay.innerText = "Invalid characters detected. Only letters, numbers, or underscores allowed.";
+            return;
         }
+        try {
+            const virtualEmail = `${username}@missioncontrol.com`;
+            if (isLoginMode) await signInWithEmailAndPassword(auth, virtualEmail, p);
+            else {
+                const check = await get(ref(db, `usernames/${username}`));
+                if (check.exists()) throw new Error("Callsign already claimed.");
+                const newUser = await createUserWithEmailAndPassword(auth, virtualEmail, p);
+                await set(ref(db, `usernames/${username}`), newUser.user.uid);
+            }
+        } catch (e) { errDisplay.innerText = e.message; }
     };
 
     window.logout = () => signOut(auth);
@@ -196,94 +230,71 @@
         onValue(ref(db, `users/${currentUser.uid}/tasks`), (snap) => {
             const data = snap.val();
             allTasks = data ? Object.keys(data).map(k => ({id: k, ...data[k]})) : [];
-            
-            // Auto-Delete: Cleans tasks archived > 30 days ago
-            const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
-            allTasks.forEach(t => {
-                if (t.archived && t.archivedAt && t.archivedAt < thirtyDaysAgo) {
-                    remove(ref(db, `users/${currentUser.uid}/tasks/${t.id}`));
-                }
-            });
-
-            renderUI(allTasks);
+            renderUI();
         });
     }
 
-    window.setView = (view) => {
-        currentView = view;
-        document.getElementById('btn-active').classList.toggle('active', view === 'active');
-        document.getElementById('btn-archived').classList.toggle('active', view === 'archived');
-        document.getElementById('input-container').style.display = view === 'active' ? 'grid' : 'none';
-        renderUI(allTasks);
+    // --- PROGRESS METER LOGIC ---
+    function updateProgressMeter(percent) {
+        const circle = document.getElementById('progressCircle');
+        const label = document.getElementById('pctLabel');
+        const radius = circle.r.baseVal.value;
+        const circumference = 2 * Math.PI * radius;
+        
+        const offset = circumference - (percent / 100 * circumference);
+        circle.style.strokeDashoffset = offset;
+        label.innerText = `${Math.round(percent)}%`;
+
+        // Add "Liquid Flow" animation class if tasks are incomplete
+        if (percent > 0 && percent < 100) circle.classList.add('liquid-flow');
+        else circle.classList.remove('liquid-flow');
+    }
+
+    window.setView = (v) => {
+        currentView = v;
+        document.getElementById('btn-active').style.background = v === 'active' ? 'var(--primary)' : '#fff';
+        document.getElementById('btn-active').style.color = v === 'active' ? '#fff' : 'var(--primary)';
+        document.getElementById('btn-archived').style.background = v === 'archived' ? 'var(--primary)' : '#fff';
+        document.getElementById('btn-archived').style.color = v === 'archived' ? '#fff' : 'var(--primary)';
+        document.getElementById('input-container').style.display = v === 'active' ? 'grid' : 'none';
+        renderUI();
     };
 
     window.addTask = () => {
-        const name = document.getElementById('taskName').value;
-        const cat = document.getElementById('taskCat').value;
-        const date = document.getElementById('taskDate').value;
-        const time = document.getElementById('taskTime').value;
-        if(!name || !date) return alert("Required: Name & Date");
-        set(ref(db, `users/${currentUser.uid}/tasks/${Date.now()}`), { 
-            name, cat, date, time, completed: false, archived: false
-        });
+        const n = document.getElementById('taskName').value, d = document.getElementById('taskDate').value, c = document.getElementById('taskCat').value, t = document.getElementById('taskTime').value;
+        if(!n || !d) return alert("Define date.");
+        set(ref(db, `users/${currentUser.uid}/tasks/${Date.now()}`), { name: n, cat: c, date: d, time: t, completed: false, archived: false });
         document.getElementById('taskName').value = '';
     };
 
     window.toggleTask = (id, cur) => update(ref(db, `users/${currentUser.uid}/tasks/${id}`), { completed: !cur });
-    
-    window.archiveTask = (id, cur) => {
-        const timestamp = !cur ? Date.now() : null; // Track when archived
-        update(ref(db, `users/${currentUser.uid}/tasks/${id}`), { archived: !cur, archivedAt: timestamp });
-    };
-
+    window.archiveTask = (id, cur) => update(ref(db, `users/${currentUser.uid}/tasks/${id}`), { archived: !cur, archivedAt: !cur ? Date.now() : null });
     window.deleteTask = (id) => remove(ref(db, `users/${currentUser.uid}/tasks/${id}`));
 
-    window.downloadBackup = () => {
-        const blob = new Blob([JSON.stringify(allTasks, null, 2)], { type: "application/json" });
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = `tasks_backup_${new Date().toISOString().split('T')[0]}.json`;
-        a.click();
-    };
-
-    function renderUI(tasks) {
-        const todayStr = new Date().toISOString().split('T')[0];
+    function renderUI() {
+        const today = new Date().toISOString().split('T')[0];
         const prev = document.getElementById('list-prev'), now = document.getElementById('list-today'), up = document.getElementById('up-cont');
+        if(!prev) return;
         prev.innerHTML = now.innerHTML = up.innerHTML = '';
-        
-        document.getElementById('col1-title').innerText = currentView === 'active' ? '● Previous' : '● Past Log';
-
-        let filteredTasks = tasks.filter(t => currentView === 'archived' ? t.archived : !t.archived);
-
-        filteredTasks.sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time)).forEach(t => {
+        let tasks = allTasks.filter(t => currentView === 'archived' ? t.archived : !t.archived);
+        tasks.sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time)).forEach(t => {
             const li = document.createElement('li');
-            li.className = `cat-${t.cat}`;
+            li.style.borderLeftColor = `var(--cat-${t.cat})`;
             li.innerHTML = `
-                <div style="display:flex;align-items:center;gap:10px;">
+                <div style="display:flex;align-items:center;gap:12px;">
                     <input type="checkbox" ${t.completed?'checked':''} onchange="toggleTask('${t.id}', ${t.completed})">
-                    <div style="${t.completed?'text-decoration:line-through;color:#aaa':''}">
-                        <b>${t.name}</b><br><small>${t.cat.toUpperCase()} | ${t.time || 'No Time'}</small>
+                    <div style="${t.completed?'text-decoration:line-through;opacity:0.4':''}">
+                        <b style="font-size:14px;">${t.name}</b><br><small style="font-size:10px;opacity:0.6;">${t.cat.toUpperCase()} | ${t.time || '--:--'}</small>
                     </div>
                 </div>
-                <div class="item-actions">
-                    <button class="action-btn archive-btn" onclick="archiveTask('${t.id}', ${t.archived})">${t.archived ? '📤' : '📥'}</button>
-                    <button class="action-btn delete-btn" onclick="deleteTask('${t.id}')">×</button>
-                </div>
+                <div><button onclick="archiveTask('${t.id}', ${t.archived})">${t.archived?'📤':'📥'}</button><button onclick="deleteTask('${t.id}')" style="color:var(--overdue)">×</button></div>
             `;
-            
-            if (t.date < todayStr) prev.appendChild(li);
-            else if (t.date === todayStr) now.appendChild(li);
-            else {
-                // Add Month headers for upcoming
-                up.appendChild(li);
-            }
+            if (t.date < today) prev.appendChild(li); else if (t.date === today) now.appendChild(li); else up.appendChild(li);
         });
-
-        const activeTotal = tasks.filter(t => !t.archived).length;
-        const activeDone = tasks.filter(t => !t.archived && t.completed).length;
-        const pct = activeTotal ? Math.round((activeDone / activeTotal) * 100) : 0;
-        document.getElementById('pctText').innerText = pct + "%";
-        ring.style.strokeDashoffset = circumference - (pct / 100 * circumference);
+        const active = allTasks.filter(t => !t.archived);
+        const done = active.filter(t => t.completed).length;
+        const pct = active.length ? (done/active.length)*100 : 0;
+        updateProgressMeter(pct);
     }
 </script>
 </body>
