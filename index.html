@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Mission Control Pro</title>
     
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%234a90e2%22/><path d=%22M30 50L45 65L70 35%22 stroke=%22white%22 stroke-width=%2210%22 fill=%22none%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/></svg>">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
@@ -31,7 +33,7 @@
         #auth-screen { display: none; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
         .auth-card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); width: 320px; text-align: center; }
         
-        /* Dashboard */
+        /* Dashboard Layout */
         #app-dashboard { display: none; padding: 20px; }
         .container { max-width: 1200px; margin: 0 auto; }
         
@@ -39,7 +41,6 @@
         .progress-box { position: relative; width: 60px; height: 60px; }
         .ring-fill { stroke: var(--primary); transition: stroke-dashoffset 0.5s; transform: rotate(-90deg); transform-origin: 50% 50%; }
 
-        /* Controls */
         .controls { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
         .filter-btn { background: #fff; border: 1px solid var(--primary); color: var(--primary); padding: 5px 15px; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: 600; }
         .filter-btn.active { background: var(--primary); color: #fff; }
@@ -63,9 +64,6 @@
         .archive-btn { color: var(--primary); }
         .delete-btn { color: var(--overdue); }
 
-        .month-header { font-size: 0.8rem; font-weight: 600; color: var(--primary); text-transform: uppercase; margin: 15px 0 5px; border-bottom: 1px solid #ccc; }
-        .day-label { font-size: 0.75rem; font-weight: 600; color: #57606f; margin: 10px 0 5px 5px; display: block; }
-
         @media (max-width: 900px) { .board, .input-bar { grid-template-columns: 1fr; } }
     </style>
 </head>
@@ -73,16 +71,17 @@
 
     <div id="splash-screen">
         <svg class="splash-logo" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#4a90e2"/><path d="M30 50L45 65L70 35" stroke="white" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <div style="color:var(--primary); font-weight:600;">MISSION CONTROL</div>
+        <div style="color:var(--primary); font-weight:600;">MISSION CONTROL PRO</div>
         <div class="loader-bar"><div class="loader-progress"></div></div>
     </div>
 
     <div id="auth-screen">
         <div class="auth-card">
             <h2>Secure Access</h2>
-            <input type="email" id="email" placeholder="Email">
+            <input type="email" id="email" placeholder="Email (use your account)">
             <input type="password" id="password" placeholder="Password">
-            <button onclick="handleAuth()" style="background:var(--primary); color:white; border:none; padding:12px; border-radius:10px; width:100%; font-weight:600; margin-top:10px;">Login / Sign Up</button>
+            <button onclick="handleAuth()" style="background:var(--primary); color:white; border:none; padding:12px; border-radius:10px; width:100%; font-weight:600; margin-top:10px; cursor:pointer;">Login / Sign Up</button>
+            <p id="auth-error" style="color:var(--overdue); font-size:12px; margin-top:10px;"></p>
         </div>
     </div>
 
@@ -120,7 +119,7 @@
                 </select>
                 <input type="date" id="taskDate">
                 <input type="time" id="taskTime">
-                <button class="btn-add" onclick="addTask()">Add</button>
+                <button class="btn-add" onclick="addTask()">Add Task</button>
             </div>
 
             <div class="board">
@@ -136,6 +135,7 @@
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getDatabase, ref, set, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
+    // Your verified Firebase configuration
     const firebaseConfig = {
         apiKey: "AIzaSyA-mhIz79hzRvTbVZKeDPEfv2uv5jh-iSA",
         authDomain: "task-list-tracker-e80d4.firebaseapp.com",
@@ -175,9 +175,19 @@
 
     window.handleAuth = async () => {
         const e = document.getElementById('email').value, p = document.getElementById('password').value;
-        if(!e || !p) return alert("Enter credentials");
-        try { await signInWithEmailAndPassword(auth, e, p); }
-        catch (err) { try { await createUserWithEmailAndPassword(auth, e, p); } catch(e2) { alert(e2.message); } }
+        const errDisplay = document.getElementById('auth-error');
+        errDisplay.innerText = "";
+        if(!e || !p) return errDisplay.innerText = "Enter credentials";
+        
+        try { 
+            await signInWithEmailAndPassword(auth, e, p); 
+        } catch (err) { 
+            try { 
+                await createUserWithEmailAndPassword(auth, e, p); 
+            } catch(e2) { 
+                errDisplay.innerText = "Error: " + e2.message;
+            } 
+        }
     };
 
     window.logout = () => signOut(auth);
@@ -186,6 +196,15 @@
         onValue(ref(db, `users/${currentUser.uid}/tasks`), (snap) => {
             const data = snap.val();
             allTasks = data ? Object.keys(data).map(k => ({id: k, ...data[k]})) : [];
+            
+            // Auto-Delete: Cleans tasks archived > 30 days ago
+            const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
+            allTasks.forEach(t => {
+                if (t.archived && t.archivedAt && t.archivedAt < thirtyDaysAgo) {
+                    remove(ref(db, `users/${currentUser.uid}/tasks/${t.id}`));
+                }
+            });
+
             renderUI(allTasks);
         });
     }
@@ -211,14 +230,19 @@
     };
 
     window.toggleTask = (id, cur) => update(ref(db, `users/${currentUser.uid}/tasks/${id}`), { completed: !cur });
-    window.archiveTask = (id, cur) => update(ref(db, `users/${currentUser.uid}/tasks/${id}`), { archived: !cur });
+    
+    window.archiveTask = (id, cur) => {
+        const timestamp = !cur ? Date.now() : null; // Track when archived
+        update(ref(db, `users/${currentUser.uid}/tasks/${id}`), { archived: !cur, archivedAt: timestamp });
+    };
+
     window.deleteTask = (id) => remove(ref(db, `users/${currentUser.uid}/tasks/${id}`));
 
     window.downloadBackup = () => {
         const blob = new Blob([JSON.stringify(allTasks, null, 2)], { type: "application/json" });
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
-        a.download = `backup_${new Date().toISOString().split('T')[0]}.json`;
+        a.download = `tasks_backup_${new Date().toISOString().split('T')[0]}.json`;
         a.click();
     };
 
@@ -227,14 +251,10 @@
         const prev = document.getElementById('list-prev'), now = document.getElementById('list-today'), up = document.getElementById('up-cont');
         prev.innerHTML = now.innerHTML = up.innerHTML = '';
         
-        // Setup titles based on view
         document.getElementById('col1-title').innerText = currentView === 'active' ? '● Previous' : '● Past Log';
-        document.getElementById('col2-title').innerText = currentView === 'active' ? '● Today' : '● Today Log';
-        document.getElementById('col3-title').innerText = currentView === 'active' ? '● Upcoming' : '● Future Log';
 
         let filteredTasks = tasks.filter(t => currentView === 'archived' ? t.archived : !t.archived);
 
-        let curM = "", curD = "";
         filteredTasks.sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time)).forEach(t => {
             const li = document.createElement('li');
             li.className = `cat-${t.cat}`;
@@ -242,7 +262,7 @@
                 <div style="display:flex;align-items:center;gap:10px;">
                     <input type="checkbox" ${t.completed?'checked':''} onchange="toggleTask('${t.id}', ${t.completed})">
                     <div style="${t.completed?'text-decoration:line-through;color:#aaa':''}">
-                        <b>${t.name}</b><br><small>${t.cat} | ${t.time || 'No Time'}</small>
+                        <b>${t.name}</b><br><small>${t.cat.toUpperCase()} | ${t.time || 'No Time'}</small>
                     </div>
                 </div>
                 <div class="item-actions">
@@ -254,18 +274,7 @@
             if (t.date < todayStr) prev.appendChild(li);
             else if (t.date === todayStr) now.appendChild(li);
             else {
-                const dateObj = new Date(t.date);
-                const mName = dateObj.toLocaleString('default', { month: 'long', year: 'numeric' });
-                const dLabel = dateObj.toLocaleDateString('default', { weekday: 'short', day: 'numeric' });
-
-                if (mName !== curM) { 
-                    curM = mName; 
-                    const h = document.createElement('div'); h.className='month-header'; h.innerText=mName; up.appendChild(h); 
-                }
-                if (t.date !== curD) {
-                    curD = t.date;
-                    const d = document.createElement('span'); d.className='day-label'; d.innerText=dLabel; up.appendChild(d);
-                }
+                // Add Month headers for upcoming
                 up.appendChild(li);
             }
         });
