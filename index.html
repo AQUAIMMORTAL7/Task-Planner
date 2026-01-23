@@ -16,73 +16,40 @@
         
         body { font-family: 'Poppins', sans-serif; background: #f0f2f5; margin: 0; color: var(--text); overflow-x: hidden; }
 
-        /* Auth Screen Styling */
-        #auth-screen { 
-            display: flex; height: 100vh; width: 100%;
-            background: var(--bg-gradient);
-            flex-direction: column; align-items: center; justify-content: center;
-        }
-        .auth-card { 
-            background: var(--glass); padding: 40px; border-radius: 24px; 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2); width: 340px; text-align: center;
-            backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3);
-        }
-        .auth-card h2 { margin-bottom: 5px; color: var(--primary); font-weight: 600; }
-        .subtitle { font-size: 13px; color: #636e72; margin-bottom: 25px; }
-        .auth-input { 
-            width: 100%; padding: 14px; margin-bottom: 15px; border-radius: 12px;
-            border: 2px solid transparent; background: #fff; outline: none;
-            transition: 0.3s; font-family: inherit; box-sizing: border-box;
-        }
-        .auth-input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(108, 92, 231, 0.2); }
-        .auth-input.invalid { border-color: var(--overdue); background: #fffafa; }
-        .btn-login { 
-            background: var(--primary); color: white; border: none; padding: 14px; 
-            border-radius: 12px; width: 100%; font-weight: 600; cursor: pointer;
-            transition: 0.3s; box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
-            text-transform: uppercase; letter-spacing: 1px;
-        }
-        .btn-login:disabled { background: #b2bec3; cursor: not-allowed; }
-        .toggle-auth { margin-top: 20px; font-size: 13px; color: #2d3436; }
-        .toggle-auth span { color: var(--primary); cursor: pointer; font-weight: 600; text-decoration: underline; }
+        /* Auth Screen */
+        #auth-screen { display: flex; height: 100vh; width: 100%; background: var(--bg-gradient); flex-direction: column; align-items: center; justify-content: center; }
+        .auth-card { background: var(--glass); padding: 40px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); width: 340px; text-align: center; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); }
+        .auth-input { width: 100%; padding: 14px; margin-bottom: 15px; border-radius: 12px; border: 2px solid #ddd; background: #fff; outline: none; box-sizing: border-box; }
+        .btn-login { background: var(--primary); color: white; border: none; padding: 14px; border-radius: 12px; width: 100%; font-weight: 600; cursor: pointer; text-transform: uppercase; }
 
         /* Splash Screen */
         #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; transition: 0.8s; }
-        .loader-bar { width: 140px; height: 5px; background: #f1f2f6; border-radius: 10px; margin-top: 20px; overflow: hidden; }
-        .loader-progress { width: 30%; height: 100%; background: var(--primary); animation: slide 1.5s infinite linear; }
-        @keyframes slide { from { transform: translateX(-100%); } to { transform: translateX(300%); } }
         .hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
-        /* Dashboard & Progress Meter Styles */
+        /* Dashboard */
         #app-dashboard { display: none; padding: 20px; }
         .header { background: white; padding: 25px; border-radius: 24px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
         
-        /* Circular Liquid Meter CSS */
+        /* Category Navigation */
+        .category-bar { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding: 5px; }
+        .cat-tab { padding: 10px 20px; border-radius: 15px; background: white; border: none; cursor: pointer; font-weight: 600; font-size: 13px; transition: 0.3s; color: #636e72; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        .cat-tab.active { background: var(--primary); color: white; transform: scale(1.05); }
+
+        /* Circular Progress */
         .progress-container { position: relative; width: 80px; height: 80px; }
         .progress-ring { transform: rotate(-90deg); }
-        .progress-ring__circle {
-            transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            stroke-linecap: round;
-            filter: drop-shadow(0 0 5px var(--primary));
-        }
-        .liquid-flow {
-            animation: flow 3s infinite linear;
-            stroke-dasharray: 10 5; /* Creates a flow segment look */
-        }
-        @keyframes flow {
-            from { stroke-dashoffset: 200; }
-            to { stroke-dashoffset: 0; }
-        }
-        .pct-label {
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 16px; font-weight: 600; color: var(--primary);
-        }
+        .progress-ring__circle { transition: stroke-dashoffset 0.6s ease; stroke-linecap: round; }
+        .liquid-flow { animation: flow 3s infinite linear; stroke-dasharray: 8 4; }
+        @keyframes flow { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
+        .pct-label { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 16px; font-weight: 600; color: var(--primary); }
 
-        /* Rest of Dashboard */
-        .input-bar { background: white; padding: 20px; border-radius: 20px; display: grid; grid-template-columns: 2fr 1.2fr 1fr 1fr auto; gap: 12px; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
+        /* Input Bar */
+        .input-bar { background: white; padding: 20px; border-radius: 20px; display: grid; grid-template-columns: 2fr 1.2fr 1fr 1fr auto; gap: 12px; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); border-bottom: 4px solid var(--primary); }
+        .btn-deploy { color: white; border: none; border-radius: 12px; padding: 10px 20px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+
+        /* Boards */
         .board { display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 20px; }
-        .col { background: #ebedef; padding: 18px; border-radius: 24px; min-height: 450px; }
+        .col { background: #ebedef; padding: 18px; border-radius: 24px; min-height: 400px; }
         li { background: white; padding: 15px; border-radius: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 6px solid var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
 
         @media (max-width: 900px) { .board, .input-bar { grid-template-columns: 1fr; } }
@@ -91,73 +58,67 @@
 <body>
 
     <div id="splash-screen">
-        <svg width="80" height="80" viewBox="0 0 100 100"><rect width="100" height="100" rx="25" fill="#6c5ce7"/><path d="M30 50L45 65L70 35" stroke="white" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <div style="margin-top:20px; font-weight:600; letter-spacing:1px; color:var(--primary)">MISSION CONTROL PRO</div>
-        <div class="loader-bar"><div class="loader-progress"></div></div>
+        <div style="font-weight:600; color:var(--primary); letter-spacing: 2px;">LOADING COMMAND CENTER...</div>
     </div>
 
     <div id="auth-screen">
         <div class="auth-card">
             <h2 id="auth-title">Welcome Back</h2>
-            <p id="auth-subtitle" class="subtitle">Access your productivity command center</p>
-            <input type="text" id="username" class="auth-input" placeholder="Callsign (Username)">
-            <input type="password" id="password" class="auth-input" placeholder="Secure Password">
+            <p id="auth-subtitle" class="subtitle">Secure authentication required</p>
+            <input type="text" id="username" class="auth-input" placeholder="Callsign">
+            <input type="password" id="password" class="auth-input" placeholder="Password">
             <button id="authBtn" class="btn-login" onclick="handleAuth()">LOGIN</button>
-            <p id="auth-error" style="color:var(--overdue); margin-top:15px; font-size: 12px; font-weight:600; line-height:1.4;"></p>
-            <div class="toggle-auth">
-                <p id="toggle-text">New operative? <span onclick="toggleAuthMode()">Request Access (Sign Up)</span></p>
-            </div>
+            <p id="auth-error" style="color:var(--overdue); margin-top:15px; font-size: 12px; font-weight:600;"></p>
+            <p style="font-size: 12px; margin-top:15px;">New operative? <span onclick="toggleAuthMode()" style="color:var(--primary); cursor:pointer; font-weight:600; text-decoration: underline;">Request Access</span></p>
         </div>
-        <p style="color:white; font-size:12px; margin-top:20px; opacity:0.8;">System Admin: Ankit, Galgotias University</p>
     </div>
 
     <div id="app-dashboard">
-        <div class="container">
-            <div class="header">
-                <div>
-                    <h2 style="margin:0; font-weight:600;">Command Center</h2>
-                    <button onclick="logout()" style="background:none; border:none; color:var(--primary); cursor:pointer; padding:5px 0; font-size:12px; font-weight:600;">Sign Out</button>
+        <div class="header">
+            <div>
+                <h2 style="margin:0;">Mission Control</h2>
+                <button onclick="logout()" style="border:none; background:none; color:var(--primary); cursor:pointer; font-weight:600; padding:0;">Terminate Session (Sign Out)</button>
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="text-align:right">
+                    <div id="filterLabel" style="font-size:10px; font-weight:600; color:var(--primary);">ALL MISSIONS</div>
+                    <div style="font-size:9px; opacity:0.5;">CURRENT EFFICIENCY</div>
                 </div>
-                
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <div style="text-align: right; line-height: 1;">
-                        <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.5;">Efficiency</div>
-                        <div style="font-size: 12px; font-weight: 600; color: var(--primary);">MISSION STATUS</div>
-                    </div>
-                    <div class="progress-container">
-                        <svg class="progress-ring" width="80" height="80">
-                            <circle stroke="#e6e6e6" stroke-width="8" fill="transparent" r="32" cx="40" cy="40"/>
-                            <circle id="progressCircle" class="progress-ring__circle" stroke="var(--primary)" stroke-width="8" fill="transparent" r="32" cx="40" cy="40" 
-                                style="stroke-dasharray: 201.06; stroke-dashoffset: 201.06;"/>
-                        </svg>
-                        <div id="pctLabel" class="pct-label">0%</div>
-                    </div>
+                <div class="progress-container">
+                    <svg class="progress-ring" width="80" height="80">
+                        <circle stroke="#eee" stroke-width="8" fill="transparent" r="32" cx="40" cy="40"/>
+                        <circle id="progressCircle" class="progress-ring__circle" stroke="var(--primary)" stroke-width="8" fill="transparent" r="32" cx="40" cy="40" style="stroke-dasharray: 201; stroke-dashoffset: 201;"/>
+                    </svg>
+                    <div id="pctLabel" class="pct-label">0%</div>
                 </div>
             </div>
+        </div>
 
-            <div style="display:flex; gap:10px; margin-bottom:20px; justify-content:center;">
-                <button id="btn-active" onclick="setView('active')" style="padding:8px 20px; border-radius:20px; border:none; cursor:pointer; background:var(--primary); color:white; font-weight:600;">ACTIVE</button>
-                <button id="btn-archived" onclick="setView('archived')" style="padding:8px 20px; border-radius:20px; border:none; cursor:pointer; background:#fff; color:var(--primary); font-weight:600;">ARCHIVE</button>
-            </div>
+        <div class="category-bar">
+            <button class="cat-tab active" onclick="setCategory('all')">ALL</button>
+            <button class="cat-tab" onclick="setCategory('work')">WORK</button>
+            <button class="cat-tab" onclick="setCategory('home')">HOME</button>
+            <button class="cat-tab" onclick="setCategory('personal')">PERSONAL</button>
+            <button class="cat-tab" onclick="setCategory('urgent')">URGENT</button>
+        </div>
 
-            <div class="input-bar" id="input-container">
-                <input type="text" id="taskName" placeholder="What is the mission?">
-                <select id="taskCat">
-                    <option value="work">Work</option>
-                    <option value="home">Home</option>
-                    <option value="personal">Personal</option>
-                    <option value="urgent">Urgent</option>
-                </select>
-                <input type="date" id="taskDate">
-                <input type="time" id="taskTime">
-                <button class="btn-add" onclick="addTask()" style="background:var(--primary); color:white; border:none; border-radius:12px; cursor:pointer; font-weight:600; padding:10px;">DEPLOY</button>
-            </div>
+        <div class="input-bar" id="inputBarContainer">
+            <input type="text" id="taskName" placeholder="Mission Name...">
+            <select id="taskCat">
+                <option value="work">Work</option>
+                <option value="home">Home</option>
+                <option value="personal">Personal</option>
+                <option value="urgent">Urgent</option>
+            </select>
+            <input type="date" id="taskDate">
+            <input type="time" id="taskTime">
+            <button id="deployBtn" class="btn-deploy" onclick="addTask()" style="background:var(--primary);">DEPLOY</button>
+        </div>
 
-            <div class="board">
-                <div class="col"><h3>⏳ PREVIOUS</h3><ul id="list-prev"></ul></div>
-                <div class="col"><h3>🚀 TODAY</h3><ul id="list-today"></ul></div>
-                <div class="col"><h3>📅 UPCOMING</h3><div id="up-cont"></div></div>
-            </div>
+        <div class="board">
+            <div class="col"><h3>⏳ PREVIOUS</h3><ul id="list-prev"></ul></div>
+            <div class="col"><h3>🚀 TODAY</h3><ul id="list-today"></ul></div>
+            <div class="col"><h3>📅 UPCOMING</h3><div id="up-cont"></div></div>
         </div>
     </div>
 
@@ -178,53 +139,73 @@
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    let isLoginMode = true; 
-    let currentUser = null, allTasks = [], currentView = 'active';
+    let currentUser = null, allTasks = [], currentCategory = 'all', isLoginMode = true;
 
+    // Fix for Modules: Export functions to Window
     window.toggleAuthMode = () => {
         isLoginMode = !isLoginMode;
-        document.getElementById('auth-title').innerText = isLoginMode ? "Welcome Back" : "New Commission";
+        document.getElementById('auth-title').innerText = isLoginMode ? "Welcome Back" : "New Operative";
         document.getElementById('authBtn').innerText = isLoginMode ? "LOGIN" : "SIGN UP";
-        document.getElementById('toggle-text').innerHTML = isLoginMode ? `New operative? <span onclick="toggleAuthMode()">Request Access (Sign Up)</span>` : `Existing operative? <span onclick="toggleAuthMode()">Authorized Login</span>`;
     };
 
     onAuthStateChanged(auth, (user) => {
-        setTimeout(() => {
-            document.getElementById('splash-screen').classList.add('hidden');
-            if (user) {
-                currentUser = user;
-                document.getElementById('auth-screen').style.display = 'none';
-                document.getElementById('app-dashboard').style.display = 'block';
-                loadData();
-            } else {
-                document.getElementById('auth-screen').style.display = 'flex';
-                document.getElementById('app-dashboard').style.display = 'none';
-            }
-        }, 1200);
+        document.getElementById('splash-screen').classList.add('hidden');
+        if (user) {
+            currentUser = user;
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('app-dashboard').style.display = 'block';
+            loadData();
+        } else {
+            document.getElementById('auth-screen').style.display = 'flex';
+            document.getElementById('app-dashboard').style.display = 'none';
+        }
     });
 
     window.handleAuth = async () => {
-        const usernameInput = document.getElementById('username'), p = document.getElementById('password').value, errDisplay = document.getElementById('auth-error'), username = usernameInput.value;
-        errDisplay.innerText = ""; usernameInput.classList.remove('invalid');
-        if(!username || !p) return errDisplay.innerText = "Credentials required.";
-        if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-            usernameInput.classList.add('invalid');
-            errDisplay.innerText = "Invalid characters detected. Only letters, numbers, or underscores allowed.";
-            return;
-        }
+        const uField = document.getElementById('username'), p = document.getElementById('password').value, err = document.getElementById('auth-error'), username = uField.value;
+        if (!/^[a-zA-Z0-9_]+$/.test(username)) return err.innerText = "Invalid characters. Use A-Z, 0-9, or _";
+        const email = `${username}@missioncontrol.com`;
         try {
-            const virtualEmail = `${username}@missioncontrol.com`;
-            if (isLoginMode) await signInWithEmailAndPassword(auth, virtualEmail, p);
+            if (isLoginMode) await signInWithEmailAndPassword(auth, email, p);
             else {
-                const check = await get(ref(db, `usernames/${username}`));
-                if (check.exists()) throw new Error("Callsign already claimed.");
-                const newUser = await createUserWithEmailAndPassword(auth, virtualEmail, p);
+                const nameCheck = await get(ref(db, `usernames/${username}`));
+                if (nameCheck.exists()) throw new Error("Callsign already claimed.");
+                const newUser = await createUserWithEmailAndPassword(auth, email, p);
                 await set(ref(db, `usernames/${username}`), newUser.user.uid);
             }
-        } catch (e) { errDisplay.innerText = e.message; }
+        } catch (e) { err.innerText = e.message; }
     };
 
     window.logout = () => signOut(auth);
+
+    // --- UPDATED CATEGORY SYNC LOGIC ---
+    window.setCategory = (cat) => {
+        currentCategory = cat;
+        
+        // 1. Update Tab Visuals
+        document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+        event.target.classList.add('active');
+        
+        // 2. Update Progress Labels
+        document.getElementById('filterLabel').innerText = cat.toUpperCase() + " MISSIONS";
+
+        // 3. SMART DEPLOY: Sync the dropdown and button color
+        const catSelect = document.getElementById('taskCat');
+        const deployBtn = document.getElementById('deployBtn');
+        const inputContainer = document.getElementById('inputBarContainer');
+
+        if (cat !== 'all') {
+            catSelect.value = cat; // Auto-select the dropdown
+            const themeColor = getComputedStyle(document.documentElement).getPropertyValue(`--cat-${cat}`);
+            deployBtn.style.background = themeColor;
+            inputContainer.style.borderBottomColor = themeColor;
+        } else {
+            deployBtn.style.background = 'var(--primary)';
+            inputContainer.style.borderBottomColor = 'var(--primary)';
+        }
+
+        renderUI();
+    };
 
     function loadData() {
         onValue(ref(db, `users/${currentUser.uid}/tasks`), (snap) => {
@@ -234,41 +215,15 @@
         });
     }
 
-    // --- PROGRESS METER LOGIC ---
-    function updateProgressMeter(percent) {
-        const circle = document.getElementById('progressCircle');
-        const label = document.getElementById('pctLabel');
-        const radius = circle.r.baseVal.value;
-        const circumference = 2 * Math.PI * radius;
-        
-        const offset = circumference - (percent / 100 * circumference);
-        circle.style.strokeDashoffset = offset;
-        label.innerText = `${Math.round(percent)}%`;
-
-        // Add "Liquid Flow" animation class if tasks are incomplete
-        if (percent > 0 && percent < 100) circle.classList.add('liquid-flow');
-        else circle.classList.remove('liquid-flow');
-    }
-
-    window.setView = (v) => {
-        currentView = v;
-        document.getElementById('btn-active').style.background = v === 'active' ? 'var(--primary)' : '#fff';
-        document.getElementById('btn-active').style.color = v === 'active' ? '#fff' : 'var(--primary)';
-        document.getElementById('btn-archived').style.background = v === 'archived' ? 'var(--primary)' : '#fff';
-        document.getElementById('btn-archived').style.color = v === 'archived' ? '#fff' : 'var(--primary)';
-        document.getElementById('input-container').style.display = v === 'active' ? 'grid' : 'none';
-        renderUI();
-    };
-
     window.addTask = () => {
         const n = document.getElementById('taskName').value, d = document.getElementById('taskDate').value, c = document.getElementById('taskCat').value, t = document.getElementById('taskTime').value;
-        if(!n || !d) return alert("Define date.");
-        set(ref(db, `users/${currentUser.uid}/tasks/${Date.now()}`), { name: n, cat: c, date: d, time: t, completed: false, archived: false });
-        document.getElementById('taskName').value = '';
+        if(!n || !d) return alert("Mission name and date are mandatory.");
+        
+        set(ref(db, `users/${currentUser.uid}/tasks/${Date.now()}`), { name: n, cat: c, date: d, time: t, completed: false, archived: false })
+            .then(() => { document.getElementById('taskName').value = ''; });
     };
 
     window.toggleTask = (id, cur) => update(ref(db, `users/${currentUser.uid}/tasks/${id}`), { completed: !cur });
-    window.archiveTask = (id, cur) => update(ref(db, `users/${currentUser.uid}/tasks/${id}`), { archived: !cur, archivedAt: !cur ? Date.now() : null });
     window.deleteTask = (id) => remove(ref(db, `users/${currentUser.uid}/tasks/${id}`));
 
     function renderUI() {
@@ -276,25 +231,29 @@
         const prev = document.getElementById('list-prev'), now = document.getElementById('list-today'), up = document.getElementById('up-cont');
         if(!prev) return;
         prev.innerHTML = now.innerHTML = up.innerHTML = '';
-        let tasks = allTasks.filter(t => currentView === 'archived' ? t.archived : !t.archived);
-        tasks.sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time)).forEach(t => {
+
+        let filtered = currentCategory === 'all' ? allTasks : allTasks.filter(t => t.cat === currentCategory);
+
+        filtered.forEach(t => {
             const li = document.createElement('li');
             li.style.borderLeftColor = `var(--cat-${t.cat})`;
             li.innerHTML = `
                 <div style="display:flex;align-items:center;gap:12px;">
                     <input type="checkbox" ${t.completed?'checked':''} onchange="toggleTask('${t.id}', ${t.completed})">
-                    <div style="${t.completed?'text-decoration:line-through;opacity:0.4':''}">
-                        <b style="font-size:14px;">${t.name}</b><br><small style="font-size:10px;opacity:0.6;">${t.cat.toUpperCase()} | ${t.time || '--:--'}</small>
-                    </div>
+                    <span style="${t.completed?'text-decoration:line-through;opacity:0.4':''}; font-size:14px; font-weight:600;">${t.name}</span>
                 </div>
-                <div><button onclick="archiveTask('${t.id}', ${t.archived})">${t.archived?'📤':'📥'}</button><button onclick="deleteTask('${t.id}')" style="color:var(--overdue)">×</button></div>
+                <button onclick="deleteTask('${t.id}')" style="background:none; border:none; color:var(--overdue); cursor:pointer; font-size:18px;">×</button>
             `;
             if (t.date < today) prev.appendChild(li); else if (t.date === today) now.appendChild(li); else up.appendChild(li);
         });
-        const active = allTasks.filter(t => !t.archived);
-        const done = active.filter(t => t.completed).length;
-        const pct = active.length ? (done/active.length)*100 : 0;
-        updateProgressMeter(pct);
+
+        // Update Circular Progress
+        const done = filtered.filter(t => t.completed).length;
+        const pct = filtered.length ? (done/filtered.length)*100 : 0;
+        const circle = document.getElementById('progressCircle'), label = document.getElementById('pctLabel');
+        circle.style.strokeDashoffset = 201 - (pct / 100 * 201);
+        label.innerText = Math.round(pct) + "%";
+        if (pct > 0 && pct < 100) circle.classList.add('liquid-flow'); else circle.classList.remove('liquid-flow');
     }
 </script>
 </body>
