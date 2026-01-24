@@ -1,9 +1,9 @@
 # 🚀 Mission Control Pro
 ### *The Ultimate Cloud-Synced Productivity Dashboard*
 
-**Mission Control Pro** is a mobile-first task management application designed for real-time synchronization across devices. Built with a focus on clean architecture and data persistence, it serves as a central hub for managing daily objectives, archiving history, and tracking progress.
+**Mission Control Pro** is a high-performance task management application designed with a "Command Center" aesthetic. Built for real-time synchronization, it combines robust Firebase data persistence with a fluid, liquid-animated UI to make productivity feel as smooth as it looks.
 
-**To Use go on** - https://aquaimmortal7.github.io/Task-Planner/
+**Live Deployment** - [aquaimmortal7.github.io/Task-Planner/](https://aquaimmortal7.github.io/Task-Planner/)
 
 ---
 
@@ -19,47 +19,46 @@
 
 ## ✨ Key Features
 
+### 💧 Liquid Analytics
+* **Weekly Fuel Levels:** A custom-built bar graph featuring "Liquid Grow" animations that trigger on every dashboard update.
+* **Elastic Physics:** Bars use custom `cubic-bezier` transitions to bounce and settle like liquid being poured into a vessel.
+* **Temporal Sync:** Automatically maps tasks to the correct day of the week (Sun-Sat) using local timezone normalization to prevent "date-shifting" bugs.
+
 ### ☁️ Real-Time Cloud Sync
-* Instant synchronization between laptop and mobile devices.
-* Powered by Firebase Realtime Database using the **Asia-Southeast** regional cluster for low latency.
+* Instant synchronization between desktop and mobile devices.
+* Powered by Firebase Realtime Database using the **Asia-Southeast** regional cluster for ultra-low latency.
 
 ### 🔒 Secure Access
-* Private user authentication system.
-* Personal task data is isolated per user; only you can access your dashboard.
+* Private user authentication system via personal "Callsigns."
+* **Data Isolation:** Your missions are strictly mapped to your UID; other operatives cannot see your dashboard.
 
 ### 📥 Archive Vault
-* Move completed or outdated tasks to a dedicated **Archive Vault**.
-* Keeps your main board clean while preserving a history of your accomplishments.
-* **Smart Archive Cleanup** Automatically removes tasks from the Archive Vault once they have been stored for more than 30 days. The countdown begins the moment a task is moved to the archive, ensuring your database remains lean and performant.
-### 📊 Visual Analytics
-* Dynamic circular progress ring that visualizes your completion rate.
-* Real-time calculation of active vs. completed tasks.
+* Move completed missions to a dedicated **Archive Vault** to keep your main workspace clean.
+* Keeps a permanent record of past accomplishments for performance review.
 
 ### 🏷️ Smart Categorization
 * **Work**, **Home**, **Personal**, and **Urgent** tags.
-* Automatic color-coding for instant visual prioritization.
+* Automatic color-coding for instant visual prioritization of your fleet's objectives.
 
 ---
 
-## 📐 How It Works
+## 📐 The Logic Engine
 
+The application processes data using two core mathematical models:
 
+1. **Fleet Completion Rate:**
+   Calculated in real-time to update the circular "Mission Status" meter:
+   $$P = \left( \frac{n_{done}}{n_{total}} \right) \times 100$$
 
-The app uses a real-time listener to track changes in the cloud. The completion logic is calculated using the following formula:
-
-$$\text{Completion Percentage} = \left( \frac{\text{Completed Tasks}}{\text{Total Active Tasks}} \right) \times 100$$
+2. **Temporal Mapping (Chart Logic):**
+   To ensure tasks appear on the correct day regardless of UTC offsets, we use a local midnight anchor:
+   $$\text{offset} = \lfloor \frac{t_{\text{target}} - t_{\text{sunday\_midnight}}}{86,400,000} \rfloor$$
 
 ---
 
-## 🚀 Setup Instructions
+## 🛡️ Firebase Security Rules
 
-### 1. Database Configuration
-Update the `firebaseConfig` in `index.html` with your project credentials. Ensure your database URL matches your region:
-`https://your-project-id-default-rtdb.asia-southeast1.firebasedatabase.app`
-
-## 🛡️ Security Rules
-
-Apply these rules in your Firebase Console to ensure your task data remains private. Use a proper code block (shown below) so the text does not turn red:
+To keep your data private, apply these rules in your **Firebase Console > Realtime Database > Rules**:
 
 ```json
 {
@@ -69,35 +68,50 @@ Apply these rules in your Firebase Console to ensure your task data remains priv
         ".read": "$uid === auth.uid",
         ".write": "$uid === auth.uid"
       }
+    },
+    "usernames": {
+      ".read": true,
+      ".write": "auth != null"
     }
   }
 }
-
 ```
 
 ---
+
 ## 🚀 Deployment & Installation
 
 ### 1. GitHub Pages Hosting
-* **Upload:** Add your `index.html` file to your GitHub repository.
-* **Navigate:** Go to the **Settings** tab of your repository and select **Pages** from the left sidebar.
-* **Deploy:** Under the "Build and deployment" section, set the branch to `main` and click **Save**.
+* **Upload:** Push your `index.html` file to your GitHub repository.
+* **Configure:** Navigate to the **Settings** tab of your repository.
+* **Pages:** Select **Pages** from the left-hand sidebar.
+* **Deploy:** Under "Build and deployment", set the Branch to `main` and click **Save**. Your site will be live at `https://your-username.github.io/your-repo-name/`.
 
-
-
-### 2. Mobile Installation
-To use this dashboard as a standalone app on your phone:
-* **Open:** Visit your live GitHub Pages URL in your mobile browser.
-* **iOS (Safari):** Tap the **Share** icon and select **Add to Home Screen**.
-* **Android (Chrome):** Tap the **Three Dots** menu and select **Add to Home Screen**.
-
-
+### 2. Mobile Installation (PWA Mode)
+To use this dashboard as a standalone mobile app without a browser URL bar:
+* **iOS (Safari):** Tap the **Share** button (square with up arrow) and select **Add to Home Screen**.
+* **Android (Chrome):** Tap the **Three Dots** icon in the top right and select **Add to Home Screen**.
 
 ---
 
 ## 👨‍💻 About the Developer
 
-* **Academic Background:** 1st Year B.Tech Computer Science & Engineering student at **Galgotias University**.
-* **Core Expertise:** Backend Developer focused on complex problem solving.
-* **Certifications:** Certified in C programming, Java basics, and Python basics.
-* **Content Creation:** Founder and creator of **"AQUAIMMORTAL"** YouTube channel.
+| Feature | Details |
+| :--- | :--- |
+| **Name** | Ankit Raj |
+| **Education** | 1st Year B.Tech CSE at **Galgotias University** |
+| **Core Expertise** | Backend Development & Logical Architecture |
+| **YouTube** | [AQUAIMMORTAL Official Channel](https://youtube.com/@AQUAIMMORTAL) |
+
+### 📜 Certifications
+* **C Programming:** Advanced Logic & Syntax
+* **Java Basics:** Object-Oriented Fundamentals
+* **Python Basics:** Data Structures & Automation
+
+---
+
+## 🤝 Contributing
+Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/aquaimmortal7/Task-Planner/issues).
+
+## ⭐️ Show your support
+Give a ⭐️ if this project helped you!
