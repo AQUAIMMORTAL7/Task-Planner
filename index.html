@@ -8,90 +8,112 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root { 
-            --primary: #6c5ce7; --secondary: #a29bfe; --overdue: #ff7675; --today: #fab1a0;
-            --bg-gradient: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
-            --glass: rgba(255, 255, 255, 0.9); --text: #2d3436; 
+            --primary: #27ae60; 
+            --secondary: #2ecc71;
+            --overdue: #e74c3c;
+            --bg-gradient: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            --glass: rgba(255, 255, 255, 0.95);
+            --text: #2d3436; 
             --cat-work: #0984e3; --cat-home: #6c5ce7; --cat-personal: #00b894; --cat-urgent: #d63031;
         }
         
-        body { font-family: 'Poppins', sans-serif; background: #f0f2f5; margin: 0; color: var(--text); overflow-x: hidden; }
+        body { font-family: 'Poppins', sans-serif; background: #f0f2f5; margin: 0; color: var(--text); }
 
         /* Auth Screen */
         #auth-screen { display: flex; height: 100vh; width: 100%; background: var(--bg-gradient); flex-direction: column; align-items: center; justify-content: center; }
-        .auth-card { background: var(--glass); padding: 40px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); width: 340px; text-align: center; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); }
+        .auth-card { background: var(--glass); padding: 40px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); width: 340px; text-align: center; }
         .auth-input { width: 100%; padding: 14px; margin-bottom: 15px; border-radius: 12px; border: 2px solid #ddd; background: #fff; outline: none; box-sizing: border-box; }
         .btn-login { background: var(--primary); color: white; border: none; padding: 14px; border-radius: 12px; width: 100%; font-weight: 600; cursor: pointer; text-transform: uppercase; }
 
-        /* Splash Screen */
-        #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; transition: 0.8s; }
+        /* Splash */
+        #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; display: flex; align-items: center; justify-content: center; z-index: 9999; transition: 0.8s; }
         .hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
         /* Dashboard */
-        #app-dashboard { display: none; padding: 20px; }
-        .header { background: white; padding: 25px; border-radius: 24px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
+        #app-dashboard { display: none; padding: 20px; max-width: 1200px; margin: auto; }
         
-        /* Category Navigation */
-        .category-bar { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding: 5px; }
-        .cat-tab { padding: 10px 20px; border-radius: 15px; background: white; border: none; cursor: pointer; font-weight: 600; font-size: 13px; transition: 0.3s; color: #636e72; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
-        .cat-tab.active { background: var(--primary); color: white; transform: scale(1.05); }
+        /* ANALYTICS SECTION */
+        .analytics-container { background: white; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); overflow: hidden; }
+        .analytics-header { background: var(--primary); color: white; padding: 10px 20px; font-weight: 600; text-align: center; font-size: 18px; letter-spacing: 1px; }
+        .analytics-content { display: flex; padding: 25px; align-items: flex-end; gap: 30px; }
+        .y-axis { display: flex; flex-direction: column; justify-content: space-between; height: 150px; padding-bottom: 25px; color: #636e72; font-size: 12px; font-weight: 600; text-align: right; width: 40px; position: relative; }
+        .y-axis-title { position: absolute; left: -35px; top: 50%; transform: rotate(-90deg) translateY(-50%); font-size: 11px; color: #2d3436; }
+        .chart-area { flex-grow: 1; display: flex; justify-content: space-between; align-items: flex-end; height: 150px; border-bottom: 2px solid #dfe6e9; padding: 0 10px; position: relative; }
+        .grid-line { position: absolute; width: 100%; height: 1px; background: #f1f2f6; left: 0; z-index: 0; }
+        .bar-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; z-index: 1; max-width: 50px; }
+        .bar-track { width: 35px; background: #f1f2f6; border-radius: 6px 6px 0 0; position: relative; height: 150px; overflow: hidden; }
+        .bar-planned { width: 100%; position: absolute; bottom: 0; background: var(--primary); opacity: 0.25; transition: 0.6s ease; }
+        .bar-done { width: 100%; position: absolute; bottom: 0; background: var(--primary); transition: 0.6s ease; }
+        .day-label { font-size: 11px; font-weight: 600; margin-top: 10px; color: #2d3436; }
 
-        /* Circular Progress */
-        .progress-container { position: relative; width: 80px; height: 80px; }
+        /* Side Circular Meter */
+        .side-meter { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 120px; }
+        .progress-container { position: relative; width: 100px; height: 100px; }
         .progress-ring { transform: rotate(-90deg); }
-        .progress-ring__circle { transition: stroke-dashoffset 0.6s ease; stroke-linecap: round; }
-        .liquid-flow { animation: flow 3s infinite linear; stroke-dasharray: 8 4; }
-        @keyframes flow { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
-        .pct-label { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 16px; font-weight: 600; color: var(--primary); }
+        .progress-ring__circle { transition: stroke-dashoffset 0.8s ease; stroke-linecap: round; }
+        .pct-label { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 22px; font-weight: 600; color: #2d3436; }
 
-        /* Input Bar */
-        .input-bar { background: white; padding: 20px; border-radius: 20px; display: grid; grid-template-columns: 2fr 1.2fr 1fr 1fr auto; gap: 12px; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); border-bottom: 4px solid var(--primary); }
-        .btn-deploy { color: white; border: none; border-radius: 12px; padding: 10px 20px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        /* VIEW TOGGLE (Active vs Archive) */
+        .view-toggle { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; }
+        .view-btn { padding: 8px 25px; border-radius: 20px; border: 2px solid var(--primary); background: transparent; color: var(--primary); cursor: pointer; font-weight: 600; transition: 0.3s; }
+        .view-btn.active { background: var(--primary); color: white; }
 
-        /* Boards */
+        /* Category Tabs & Input */
+        .category-bar { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding: 5px; }
+        .cat-tab { padding: 8px 18px; border-radius: 12px; background: white; border: none; cursor: pointer; font-weight: 600; font-size: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        .cat-tab.active { background: #34495e; color: white; }
+
+        .input-bar { background: white; padding: 20px; border-radius: 20px; display: grid; grid-template-columns: 2fr 1.2fr 1.1fr 1fr auto; gap: 12px; margin-bottom: 25px; border-bottom: 4px solid var(--primary); }
+        
+        /* Board Columns */
         .board { display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 20px; }
         .col { background: #ebedef; padding: 18px; border-radius: 24px; min-height: 400px; }
-        li { background: white; padding: 15px; border-radius: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 6px solid var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        li { background: white; padding: 15px; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 6px solid var(--primary); }
 
-        @media (max-width: 900px) { .board, .input-bar { grid-template-columns: 1fr; } }
+        @media (max-width: 900px) { .board, .input-bar, .analytics-content { flex-direction: column; grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
     <div id="splash-screen">
-        <div style="font-weight:600; color:var(--primary); letter-spacing: 2px;">LOADING COMMAND CENTER...</div>
+        <h2 style="color:var(--primary)">MISSION CONTROL PRO</h2>
     </div>
 
     <div id="auth-screen">
         <div class="auth-card">
-            <h2 id="auth-title">Welcome Back</h2>
-            <p id="auth-subtitle" class="subtitle">Secure authentication required</p>
+            <h2>Welcome Back</h2>
             <input type="text" id="username" class="auth-input" placeholder="Callsign">
             <input type="password" id="password" class="auth-input" placeholder="Password">
             <button id="authBtn" class="btn-login" onclick="handleAuth()">LOGIN</button>
-            <p id="auth-error" style="color:var(--overdue); margin-top:15px; font-size: 12px; font-weight:600;"></p>
-            <p style="font-size: 12px; margin-top:15px;">New operative? <span onclick="toggleAuthMode()" style="color:var(--primary); cursor:pointer; font-weight:600; text-decoration: underline;">Request Access</span></p>
+            <p id="auth-error" style="color:var(--overdue); margin-top:10px; font-size:12px;"></p>
+            <p style="font-size:12px; margin-top:15px;">New operative? <span onclick="toggleAuthMode()" style="color:var(--primary); cursor:pointer; font-weight: 600;">Join Fleet</span></p>
         </div>
     </div>
 
     <div id="app-dashboard">
-        <div class="header">
-            <div>
-                <h2 style="margin:0;">Mission Control</h2>
-                <button onclick="logout()" style="border:none; background:none; color:var(--primary); cursor:pointer; font-weight:600; padding:0;">Terminate Session (Sign Out)</button>
-            </div>
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <div style="text-align:right">
-                    <div id="filterLabel" style="font-size:10px; font-weight:600; color:var(--primary);">ALL MISSIONS</div>
-                    <div style="font-size:9px; opacity:0.5;">CURRENT EFFICIENCY</div>
+        <div class="analytics-container">
+            <div class="analytics-header">Overall Progress</div>
+            <div class="analytics-content">
+                <div class="y-axis">
+                    <span class="y-axis-title">Tasks</span>
+                    <span id="y-max">8</span><span>6</span><span>4</span><span>2</span><span>0</span>
                 </div>
-                <div class="progress-container">
-                    <svg class="progress-ring" width="80" height="80">
-                        <circle stroke="#eee" stroke-width="8" fill="transparent" r="32" cx="40" cy="40"/>
-                        <circle id="progressCircle" class="progress-ring__circle" stroke="var(--primary)" stroke-width="8" fill="transparent" r="32" cx="40" cy="40" style="stroke-dasharray: 201; stroke-dashoffset: 201;"/>
-                    </svg>
-                    <div id="pctLabel" class="pct-label">0%</div>
+                <div class="chart-area" id="weeklyChart"></div>
+                <div class="side-meter">
+                    <div class="progress-container">
+                        <svg class="progress-ring" width="100" height="100">
+                            <circle stroke="#f1f2f6" stroke-width="10" fill="transparent" r="42" cx="50" cy="50"/>
+                            <circle id="progressCircle" class="progress-ring__circle" stroke="var(--primary)" stroke-width="10" fill="transparent" r="42" cx="50" cy="50" style="stroke-dasharray: 264; stroke-dashoffset: 264;"/>
+                        </svg>
+                        <div id="pctLabel" class="pct-label">0%</div>
+                    </div>
                 </div>
             </div>
+        </div>
+
+        <div class="view-toggle">
+            <button id="view-active" class="view-btn active" onclick="setView('active')">ACTIVE MISSIONS</button>
+            <button id="view-archived" class="view-btn" onclick="setView('archived')">ARCHIVE VAULT</button>
         </div>
 
         <div class="category-bar">
@@ -103,16 +125,13 @@
         </div>
 
         <div class="input-bar" id="inputBarContainer">
-            <input type="text" id="taskName" placeholder="Mission Name...">
+            <input type="text" id="taskName" placeholder="New Mission...">
             <select id="taskCat">
-                <option value="work">Work</option>
-                <option value="home">Home</option>
-                <option value="personal">Personal</option>
-                <option value="urgent">Urgent</option>
+                <option value="work">Work</option><option value="home">Home</option><option value="personal">Personal</option><option value="urgent">Urgent</option>
             </select>
             <input type="date" id="taskDate">
             <input type="time" id="taskTime">
-            <button id="deployBtn" class="btn-deploy" onclick="addTask()" style="background:var(--primary);">DEPLOY</button>
+            <button onclick="addTask()" style="background:var(--primary); color:white; border:none; border-radius:12px; padding:10px 20px; font-weight:600; cursor:pointer;">DEPLOY</button>
         </div>
 
         <div class="board">
@@ -139,71 +158,48 @@
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    let currentUser = null, allTasks = [], currentCategory = 'all', isLoginMode = true;
+    let currentUser = null, allTasks = [], currentCategory = 'all', currentView = 'active', isLoginMode = true;
 
-    // Fix for Modules: Export functions to Window
-    window.toggleAuthMode = () => {
-        isLoginMode = !isLoginMode;
-        document.getElementById('auth-title').innerText = isLoginMode ? "Welcome Back" : "New Operative";
-        document.getElementById('authBtn').innerText = isLoginMode ? "LOGIN" : "SIGN UP";
-    };
+    const getTodayStr = () => new Date().toISOString().split('T')[0];
+    document.getElementById('taskDate').min = getTodayStr();
 
     onAuthStateChanged(auth, (user) => {
         document.getElementById('splash-screen').classList.add('hidden');
-        if (user) {
-            currentUser = user;
-            document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('app-dashboard').style.display = 'block';
-            loadData();
-        } else {
-            document.getElementById('auth-screen').style.display = 'flex';
-            document.getElementById('app-dashboard').style.display = 'none';
-        }
+        if (user) { currentUser = user; document.getElementById('auth-screen').style.display = 'none'; document.getElementById('app-dashboard').style.display = 'block'; loadData(); }
+        else { document.getElementById('auth-screen').style.display = 'flex'; document.getElementById('app-dashboard').style.display = 'none'; }
     });
 
     window.handleAuth = async () => {
-        const uField = document.getElementById('username'), p = document.getElementById('password').value, err = document.getElementById('auth-error'), username = uField.value;
-        if (!/^[a-zA-Z0-9_]+$/.test(username)) return err.innerText = "Invalid characters. Use A-Z, 0-9, or _";
+        const u = document.getElementById('username'), p = document.getElementById('password').value, err = document.getElementById('auth-error'), username = u.value;
+        if (!/^[a-zA-Z0-9_]+$/.test(username)) return err.innerText = "Only letters/numbers/underscores allowed.";
         const email = `${username}@missioncontrol.com`;
         try {
             if (isLoginMode) await signInWithEmailAndPassword(auth, email, p);
             else {
-                const nameCheck = await get(ref(db, `usernames/${username}`));
-                if (nameCheck.exists()) throw new Error("Callsign already claimed.");
+                const check = await get(ref(db, `usernames/${username}`));
+                if (check.exists()) throw new Error("Taken.");
                 const newUser = await createUserWithEmailAndPassword(auth, email, p);
                 await set(ref(db, `usernames/${username}`), newUser.user.uid);
             }
         } catch (e) { err.innerText = e.message; }
     };
 
+    window.toggleAuthMode = () => { isLoginMode = !isLoginMode; document.getElementById('authBtn').innerText = isLoginMode ? "LOGIN" : "SIGN UP"; };
     window.logout = () => signOut(auth);
 
-    // --- UPDATED CATEGORY SYNC LOGIC ---
+    // --- VIEW & CATEGORY LOGIC ---
+    window.setView = (view) => {
+        currentView = view;
+        document.getElementById('view-active').classList.toggle('active', view === 'active');
+        document.getElementById('view-archived').classList.toggle('active', view === 'archived');
+        document.getElementById('inputBarContainer').style.display = view === 'active' ? 'grid' : 'none';
+        renderUI();
+    };
+
     window.setCategory = (cat) => {
         currentCategory = cat;
-        
-        // 1. Update Tab Visuals
         document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
         event.target.classList.add('active');
-        
-        // 2. Update Progress Labels
-        document.getElementById('filterLabel').innerText = cat.toUpperCase() + " MISSIONS";
-
-        // 3. SMART DEPLOY: Sync the dropdown and button color
-        const catSelect = document.getElementById('taskCat');
-        const deployBtn = document.getElementById('deployBtn');
-        const inputContainer = document.getElementById('inputBarContainer');
-
-        if (cat !== 'all') {
-            catSelect.value = cat; // Auto-select the dropdown
-            const themeColor = getComputedStyle(document.documentElement).getPropertyValue(`--cat-${cat}`);
-            deployBtn.style.background = themeColor;
-            inputContainer.style.borderBottomColor = themeColor;
-        } else {
-            deployBtn.style.background = 'var(--primary)';
-            inputContainer.style.borderBottomColor = 'var(--primary)';
-        }
-
         renderUI();
     };
 
@@ -217,43 +213,72 @@
 
     window.addTask = () => {
         const n = document.getElementById('taskName').value, d = document.getElementById('taskDate').value, c = document.getElementById('taskCat').value, t = document.getElementById('taskTime').value;
-        if(!n || !d) return alert("Mission name and date are mandatory.");
-        
-        set(ref(db, `users/${currentUser.uid}/tasks/${Date.now()}`), { name: n, cat: c, date: d, time: t, completed: false, archived: false })
-            .then(() => { document.getElementById('taskName').value = ''; });
+        if(!n || !d) return alert("Required fields missing.");
+        set(ref(db, `users/${currentUser.uid}/tasks/${Date.now()}`), { name: n, cat: c, date: d, time: t, completed: false, archived: false });
+        document.getElementById('taskName').value = '';
     };
 
     window.toggleTask = (id, cur) => update(ref(db, `users/${currentUser.uid}/tasks/${id}`), { completed: !cur });
+    window.archiveTask = (id, cur) => update(ref(db, `users/${currentUser.uid}/tasks/${id}`), { archived: !cur });
     window.deleteTask = (id) => remove(ref(db, `users/${currentUser.uid}/tasks/${id}`));
 
+    function getStartOfWeek() {
+        const d = new Date();
+        const day = d.getDay(), diff = d.getDate() - day + (day === 0 ? -6 : 1); 
+        return new Date(d.setDate(diff)).toISOString().split('T')[0];
+    }
+
     function renderUI() {
-        const today = new Date().toISOString().split('T')[0];
+        const today = getTodayStr(), startOfWeek = getStartOfWeek();
         const prev = document.getElementById('list-prev'), now = document.getElementById('list-today'), up = document.getElementById('up-cont');
         if(!prev) return;
         prev.innerHTML = now.innerHTML = up.innerHTML = '';
 
-        let filtered = currentCategory === 'all' ? allTasks : allTasks.filter(t => t.cat === currentCategory);
+        // 1. Filter by Active/Archive status
+        let filtered = allTasks.filter(t => currentView === 'archived' ? t.archived === true : !t.archived);
+        
+        // 2. Filter by Category
+        if (currentCategory !== 'all') {
+            filtered = filtered.filter(t => t.cat === currentCategory);
+        }
+
+        const stats = [0,0,0,0,0,0,0], doneStats = [0,0,0,0,0,0,0];
 
         filtered.forEach(t => {
             const li = document.createElement('li');
             li.style.borderLeftColor = `var(--cat-${t.cat})`;
             li.innerHTML = `
-                <div style="display:flex;align-items:center;gap:12px;">
+                <div style="display:flex;align-items:center;gap:10px;">
                     <input type="checkbox" ${t.completed?'checked':''} onchange="toggleTask('${t.id}', ${t.completed})">
-                    <span style="${t.completed?'text-decoration:line-through;opacity:0.4':''}; font-size:14px; font-weight:600;">${t.name}</span>
+                    <span style="${t.completed?'text-decoration:line-through;opacity:0.4':''}; font-weight:600;">${t.name}</span>
                 </div>
-                <button onclick="deleteTask('${t.id}')" style="background:none; border:none; color:var(--overdue); cursor:pointer; font-size:18px;">×</button>
-            `;
+                <div style="display:flex; gap:10px;">
+                    <button onclick="archiveTask('${t.id}', ${t.archived})" style="background:none; border:none; cursor:pointer; font-size:16px;">${t.archived?'📤':'📥'}</button>
+                    <button onclick="deleteTask('${t.id}')" style="background:none; border:none; cursor:pointer; color:var(--overdue)">×</button>
+                </div>`;
+            
             if (t.date < today) prev.appendChild(li); else if (t.date === today) now.appendChild(li); else up.appendChild(li);
+
+            const diff = (new Date(t.date) - new Date(startOfWeek)) / (1000 * 60 * 60 * 24);
+            if(diff >= 0 && diff < 7) { stats[Math.floor(diff)]++; if(t.completed) doneStats[Math.floor(diff)]++; }
         });
 
-        // Update Circular Progress
-        const done = filtered.filter(t => t.completed).length;
-        const pct = filtered.length ? (done/filtered.length)*100 : 0;
-        const circle = document.getElementById('progressCircle'), label = document.getElementById('pctLabel');
-        circle.style.strokeDashoffset = 201 - (pct / 100 * 201);
-        label.innerText = Math.round(pct) + "%";
-        if (pct > 0 && pct < 100) circle.classList.add('liquid-flow'); else circle.classList.remove('liquid-flow');
+        // Chart Rendering
+        const chart = document.getElementById('weeklyChart');
+        chart.innerHTML = `<div class="grid-line" style="bottom: 25%;"></div><div class="grid-line" style="bottom: 50%;"></div><div class="grid-line" style="bottom: 75%;"></div>`;
+        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const max = Math.max(...stats, 8);
+        document.getElementById('y-max').innerText = max;
+
+        days.forEach((day, i) => {
+            const pHeight = (stats[i] / max) * 100, dHeight = (doneStats[i] / max) * 100;
+            chart.innerHTML += `<div class="bar-wrapper"><div class="bar-track"><div class="bar-planned" style="height:${pHeight}%"></div><div class="bar-done" style="height:${dHeight}%"></div></div><div class="day-label">${day}</div></div>`;
+        });
+
+        const total = filtered.length, done = filtered.filter(t => t.completed).length;
+        const pct = total ? (done/total)*100 : 0;
+        document.getElementById('progressCircle').style.strokeDashoffset = 264 - (pct / 100 * 264);
+        document.getElementById('pctLabel').innerText = Math.round(pct) + "%";
     }
 </script>
 </body>
