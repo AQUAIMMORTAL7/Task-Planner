@@ -17,7 +17,7 @@
             --cat-work: #0984e3; --cat-home: #6c5ce7; --cat-personal: #00b894; --cat-urgent: #d63031;
         }
         
-        body { font-family: 'Poppins', sans-serif; background: #f0f2f5; margin: 0; color: var(--text); }
+        body { font-family: 'Poppins', sans-serif; background: #f0f2f5; margin: 0; color: var(--text); overflow-x: hidden; }
 
         /* Auth Screen */
         #auth-screen { display: flex; height: 100vh; width: 100%; background: var(--bg-gradient); flex-direction: column; align-items: center; justify-content: center; }
@@ -36,41 +36,60 @@
         .analytics-container { background: white; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); overflow: hidden; }
         .analytics-header { background: var(--primary); color: white; padding: 10px 20px; font-weight: 600; text-align: center; font-size: 18px; letter-spacing: 1px; }
         .analytics-content { display: flex; padding: 25px; align-items: flex-end; gap: 30px; }
-        .y-axis { display: flex; flex-direction: column; justify-content: space-between; height: 150px; padding-bottom: 25px; color: #636e72; font-size: 12px; font-weight: 600; text-align: right; width: 40px; position: relative; }
-        .y-axis-title { position: absolute; left: -35px; top: 50%; transform: rotate(-90deg) translateY(-50%); font-size: 11px; color: #2d3436; }
+        
         .chart-area { flex-grow: 1; display: flex; justify-content: space-between; align-items: flex-end; height: 150px; border-bottom: 2px solid #dfe6e9; padding: 0 10px; position: relative; }
         .grid-line { position: absolute; width: 100%; height: 1px; background: #f1f2f6; left: 0; z-index: 0; }
+        
+        /* LIQUID GROW ANIMATION */
         .bar-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; z-index: 1; max-width: 50px; }
-        .bar-track { width: 35px; background: #f1f2f6; border-radius: 6px 6px 0 0; position: relative; height: 150px; overflow: hidden; }
-        .bar-planned { width: 100%; position: absolute; bottom: 0; background: var(--primary); opacity: 0.25; transition: 0.6s ease; }
-        .bar-done { width: 100%; position: absolute; bottom: 0; background: var(--primary); transition: 0.6s ease; }
+        .bar-track { width: 30px; background: #f1f2f6; border-radius: 15px 15px 0 0; position: relative; height: 150px; overflow: hidden; }
+        
+        .bar-planned, .bar-done { 
+            width: 100%; 
+            position: absolute; 
+            bottom: 0; 
+            border-radius: 12px 12px 0 0;
+            height: 0; /* Start at 0 for growth animation */
+            transition: height 1.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
+
+        .bar-planned { background: var(--primary); opacity: 0.15; }
+        .bar-done { 
+            background: linear-gradient(to top, var(--primary), var(--secondary));
+            box-shadow: 0 -2px 10px rgba(46, 204, 113, 0.2);
+        }
+
+        /* Subtle liquid sway */
+        @keyframes liquidSway {
+            0%, 100% { border-radius: 12px 12px 0 0; }
+            50% { border-radius: 18px 8px 0 0; }
+        }
+        .bar-done { animation: liquidSway 4s ease-in-out infinite; }
+
+        .y-axis { display: flex; flex-direction: column; justify-content: space-between; height: 150px; padding-bottom: 25px; color: #636e72; font-size: 11px; width: 30px; }
         .day-label { font-size: 11px; font-weight: 600; margin-top: 10px; color: #2d3436; }
 
-        /* Side Circular Meter */
-        .side-meter { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 120px; }
         .progress-container { position: relative; width: 100px; height: 100px; }
         .progress-ring { transform: rotate(-90deg); }
-        .progress-ring__circle { transition: stroke-dashoffset 0.8s ease; stroke-linecap: round; }
-        .pct-label { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 22px; font-weight: 600; color: #2d3436; }
+        .progress-ring__circle { transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1); stroke-linecap: round; }
+        .pct-label { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 22px; font-weight: 600; }
 
-        /* VIEW TOGGLE (Active vs Archive) */
+        /* Rest of UI Styles */
         .view-toggle { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; }
         .view-btn { padding: 8px 25px; border-radius: 20px; border: 2px solid var(--primary); background: transparent; color: var(--primary); cursor: pointer; font-weight: 600; transition: 0.3s; }
         .view-btn.active { background: var(--primary); color: white; }
 
-        /* Category Tabs & Input */
         .category-bar { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding: 5px; }
-        .cat-tab { padding: 8px 18px; border-radius: 12px; background: white; border: none; cursor: pointer; font-weight: 600; font-size: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        .cat-tab { padding: 8px 18px; border-radius: 12px; background: white; border: none; cursor: pointer; font-weight: 600; font-size: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); white-space: nowrap; }
         .cat-tab.active { background: #34495e; color: white; }
 
         .input-bar { background: white; padding: 20px; border-radius: 20px; display: grid; grid-template-columns: 2fr 1.2fr 1.1fr 1fr auto; gap: 12px; margin-bottom: 25px; border-bottom: 4px solid var(--primary); }
         
-        /* Board Columns */
         .board { display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 20px; }
         .col { background: #ebedef; padding: 18px; border-radius: 24px; min-height: 400px; }
-        li { background: white; padding: 15px; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 6px solid var(--primary); }
+        li { background: white; padding: 15px; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 6px solid var(--primary); transition: 0.3s; }
 
-        @media (max-width: 900px) { .board, .input-bar, .analytics-content { flex-direction: column; grid-template-columns: 1fr; } }
+        @media (max-width: 900px) { .board, .input-bar { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -92,10 +111,9 @@
 
     <div id="app-dashboard">
         <div class="analytics-container">
-            <div class="analytics-header">Overall Progress</div>
+            <div class="analytics-header">Weekly Fuel Levels</div>
             <div class="analytics-content">
                 <div class="y-axis">
-                    <span class="y-axis-title">Tasks</span>
                     <span id="y-max">8</span><span>6</span><span>4</span><span>2</span><span>0</span>
                 </div>
                 <div class="chart-area" id="weeklyChart"></div>
@@ -112,8 +130,8 @@
         </div>
 
         <div class="view-toggle">
-            <button id="view-active" class="view-btn active" onclick="setView('active')">ACTIVE MISSIONS</button>
-            <button id="view-archived" class="view-btn" onclick="setView('archived')">ARCHIVE VAULT</button>
+            <button id="view-active" class="view-btn active" onclick="setView('active')">ACTIVE</button>
+            <button id="view-archived" class="view-btn" onclick="setView('archived')">ARCHIVE</button>
         </div>
 
         <div class="category-bar">
@@ -125,7 +143,7 @@
         </div>
 
         <div class="input-bar" id="inputBarContainer">
-            <input type="text" id="taskName" placeholder="New Mission...">
+            <input type="text" id="taskName" placeholder="Mission Name...">
             <select id="taskCat">
                 <option value="work">Work</option><option value="home">Home</option><option value="personal">Personal</option><option value="urgent">Urgent</option>
             </select>
@@ -160,18 +178,25 @@
 
     let currentUser = null, allTasks = [], currentCategory = 'all', currentView = 'active', isLoginMode = true;
 
-    const getTodayStr = () => new Date().toISOString().split('T')[0];
+    const getTodayStr = () => new Date().toLocaleDateString('en-CA');
     document.getElementById('taskDate').min = getTodayStr();
 
     onAuthStateChanged(auth, (user) => {
         document.getElementById('splash-screen').classList.add('hidden');
-        if (user) { currentUser = user; document.getElementById('auth-screen').style.display = 'none'; document.getElementById('app-dashboard').style.display = 'block'; loadData(); }
-        else { document.getElementById('auth-screen').style.display = 'flex'; document.getElementById('app-dashboard').style.display = 'none'; }
+        if (user) { 
+            currentUser = user; 
+            document.getElementById('auth-screen').style.display = 'none'; 
+            document.getElementById('app-dashboard').style.display = 'block'; 
+            loadData(); 
+        } else { 
+            document.getElementById('auth-screen').style.display = 'flex'; 
+            document.getElementById('app-dashboard').style.display = 'none'; 
+        }
     });
 
     window.handleAuth = async () => {
         const u = document.getElementById('username'), p = document.getElementById('password').value, err = document.getElementById('auth-error'), username = u.value;
-        if (!/^[a-zA-Z0-9_]+$/.test(username)) return err.innerText = "Only letters/numbers/underscores allowed.";
+        if (!/^[a-zA-Z0-9_]+$/.test(username)) return err.innerText = "Invalid Callsign.";
         const email = `${username}@missioncontrol.com`;
         try {
             if (isLoginMode) await signInWithEmailAndPassword(auth, email, p);
@@ -184,10 +209,8 @@
         } catch (e) { err.innerText = e.message; }
     };
 
-    window.toggleAuthMode = () => { isLoginMode = !isLoginMode; document.getElementById('authBtn').innerText = isLoginMode ? "LOGIN" : "SIGN UP"; };
-    window.logout = () => signOut(auth);
-
-    // --- VIEW & CATEGORY LOGIC ---
+    window.toggleAuthMode = () => { isLoginMode = !isLoginMode; document.getElementById('authBtn').innerText = isLoginMode ? "LOGIN" : "JOIN FLEET"; };
+    
     window.setView = (view) => {
         currentView = view;
         document.getElementById('view-active').classList.toggle('active', view === 'active');
@@ -199,7 +222,7 @@
     window.setCategory = (cat) => {
         currentCategory = cat;
         document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
-        event.target.classList.add('active');
+        if(event) event.target.classList.add('active');
         renderUI();
     };
 
@@ -223,24 +246,24 @@
     window.deleteTask = (id) => remove(ref(db, `users/${currentUser.uid}/tasks/${id}`));
 
     function getStartOfWeek() {
-        const d = new Date();
-        const day = d.getDay(), diff = d.getDate() - day + (day === 0 ? -6 : 1); 
-        return new Date(d.setDate(diff)).toISOString().split('T')[0];
+        const now = new Date();
+        const distToSunday = now.getDay();
+        const sunday = new Date(now);
+        sunday.setDate(now.getDate() - distToSunday);
+        return sunday.toLocaleDateString('en-CA');
     }
 
     function renderUI() {
-        const today = getTodayStr(), startOfWeek = getStartOfWeek();
+        const todayStr = getTodayStr();
+        const startOfWeekStr = getStartOfWeek();
+        const startOfWeekDate = new Date(startOfWeekStr + 'T00:00:00');
+
         const prev = document.getElementById('list-prev'), now = document.getElementById('list-today'), up = document.getElementById('up-cont');
         if(!prev) return;
         prev.innerHTML = now.innerHTML = up.innerHTML = '';
 
-        // 1. Filter by Active/Archive status
         let filtered = allTasks.filter(t => currentView === 'archived' ? t.archived === true : !t.archived);
-        
-        // 2. Filter by Category
-        if (currentCategory !== 'all') {
-            filtered = filtered.filter(t => t.cat === currentCategory);
-        }
+        if (currentCategory !== 'all') filtered = filtered.filter(t => t.cat === currentCategory);
 
         const stats = [0,0,0,0,0,0,0], doneStats = [0,0,0,0,0,0,0];
 
@@ -253,14 +276,20 @@
                     <span style="${t.completed?'text-decoration:line-through;opacity:0.4':''}; font-weight:600;">${t.name}</span>
                 </div>
                 <div style="display:flex; gap:10px;">
-                    <button onclick="archiveTask('${t.id}', ${t.archived})" style="background:none; border:none; cursor:pointer; font-size:16px;">${t.archived?'📤':'📥'}</button>
+                    <button onclick="archiveTask('${t.id}', ${t.archived})" style="background:none; border:none; cursor:pointer;">${t.archived?'📤':'📥'}</button>
                     <button onclick="deleteTask('${t.id}')" style="background:none; border:none; cursor:pointer; color:var(--overdue)">×</button>
                 </div>`;
             
-            if (t.date < today) prev.appendChild(li); else if (t.date === today) now.appendChild(li); else up.appendChild(li);
+            if (t.date < todayStr) prev.appendChild(li); 
+            else if (t.date === todayStr) now.appendChild(li); 
+            else up.appendChild(li);
 
-            const diff = (new Date(t.date) - new Date(startOfWeek)) / (1000 * 60 * 60 * 24);
-            if(diff >= 0 && diff < 7) { stats[Math.floor(diff)]++; if(t.completed) doneStats[Math.floor(diff)]++; }
+            const taskDate = new Date(t.date + 'T00:00:00');
+            const diff = Math.round((taskDate - startOfWeekDate) / (1000 * 60 * 60 * 24));
+            if(diff >= 0 && diff < 7) { 
+                stats[diff]++; 
+                if(t.completed) doneStats[diff]++; 
+            }
         });
 
         // Chart Rendering
@@ -272,9 +301,31 @@
 
         days.forEach((day, i) => {
             const pHeight = (stats[i] / max) * 100, dHeight = (doneStats[i] / max) * 100;
-            chart.innerHTML += `<div class="bar-wrapper"><div class="bar-track"><div class="bar-planned" style="height:${pHeight}%"></div><div class="bar-done" style="height:${dHeight}%"></div></div><div class="day-label">${day}</div></div>`;
+            const isToday = (i === new Date().getDay());
+            
+            chart.innerHTML += `
+                <div class="bar-wrapper">
+                    <div class="bar-track">
+                        <div class="bar-planned" id="p-bar-${i}" style="height:0%"></div>
+                        <div class="bar-done" id="d-bar-${i}" style="height:0%"></div>
+                    </div>
+                    <div class="day-label" style="${isToday ? 'color:var(--primary); font-weight:bold;' : ''}">${day}</div>
+                </div>`;
+            
+            // GROW ANIMATION: 
+            // Use requestAnimationFrame to ensure the 0% height is rendered first, 
+            // then animate to target height.
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    const pb = document.getElementById(`p-bar-${i}`);
+                    const db = document.getElementById(`d-bar-${i}`);
+                    if(pb) pb.style.height = pHeight + '%';
+                    if(db) db.style.height = dHeight + '%';
+                });
+            });
         });
 
+        // Progress Circle Logic
         const total = filtered.length, done = filtered.filter(t => t.completed).length;
         const pct = total ? (done/total)*100 : 0;
         document.getElementById('progressCircle').style.strokeDashoffset = 264 - (pct / 100 * 264);
