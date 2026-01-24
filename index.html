@@ -19,10 +19,20 @@
         
         body { font-family: 'Poppins', sans-serif; background: #f0f2f5; margin: 0; color: var(--text); overflow-x: hidden; }
 
+        /* Logout Button */
+        .logout-btn { position: fixed; top: 20px; right: 20px; background: white; color: var(--overdue); border: 2px solid var(--overdue); padding: 8px 15px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; z-index: 100; font-size: 12px; }
+        .logout-btn:hover { background: var(--overdue); color: white; box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3); }
+
         /* Auth Screen */
         #auth-screen { display: flex; height: 100vh; width: 100%; background: var(--bg-gradient); flex-direction: column; align-items: center; justify-content: center; }
         .auth-card { background: var(--glass); padding: 40px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); width: 340px; text-align: center; }
-        .auth-input { width: 100%; padding: 14px; margin-bottom: 15px; border-radius: 12px; border: 2px solid #ddd; background: #fff; outline: none; box-sizing: border-box; }
+        .auth-input-container { position: relative; width: 100%; margin-bottom: 15px; }
+        .auth-input { width: 100%; padding: 14px; padding-right: 70px; border-radius: 12px; border: 2px solid #ddd; background: #fff; outline: none; box-sizing: border-box; }
+        
+        /* Show/Hide Button */
+        .pass-toggle-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: #f1f2f6; border: 1px solid #ddd; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; cursor: pointer; color: #636e72; text-transform: uppercase; }
+        .pass-toggle-btn:hover { background: #dfe6e9; }
+
         .btn-login { background: var(--primary); color: white; border: none; padding: 14px; border-radius: 12px; width: 100%; font-weight: 600; cursor: pointer; text-transform: uppercase; }
 
         /* Splash */
@@ -30,7 +40,7 @@
         .hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
         /* Dashboard */
-        #app-dashboard { display: none; padding: 20px; max-width: 1200px; margin: auto; }
+        #app-dashboard { display: none; padding: 20px; max-width: 1200px; margin: auto; padding-top: 60px; }
         
         /* ANALYTICS SECTION */
         .analytics-container { background: white; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); overflow: hidden; }
@@ -40,7 +50,6 @@
         .chart-area { flex-grow: 1; display: flex; justify-content: space-between; align-items: flex-end; height: 150px; border-bottom: 2px solid #dfe6e9; padding: 0 10px; position: relative; }
         .grid-line { position: absolute; width: 100%; height: 1px; background: #f1f2f6; left: 0; z-index: 0; }
         
-        /* LIQUID GROW ANIMATION */
         .bar-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; z-index: 1; max-width: 50px; }
         .bar-track { width: 30px; background: #f1f2f6; border-radius: 15px 15px 0 0; position: relative; height: 150px; overflow: hidden; }
         
@@ -49,7 +58,7 @@
             position: absolute; 
             bottom: 0; 
             border-radius: 12px 12px 0 0;
-            height: 0; /* Start at 0 for growth animation */
+            height: 0; 
             transition: height 1.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
         }
 
@@ -59,7 +68,6 @@
             box-shadow: 0 -2px 10px rgba(46, 204, 113, 0.2);
         }
 
-        /* Subtle liquid sway */
         @keyframes liquidSway {
             0%, 100% { border-radius: 12px 12px 0 0; }
             50% { border-radius: 18px 8px 0 0; }
@@ -67,14 +75,13 @@
         .bar-done { animation: liquidSway 4s ease-in-out infinite; }
 
         .y-axis { display: flex; flex-direction: column; justify-content: space-between; height: 150px; padding-bottom: 25px; color: #636e72; font-size: 11px; width: 30px; }
-        .day-label { font-size: 11px; font-weight: 600; margin-top: 10px; color: #2d3436; }
+        .day-label { font-size: 11px; font-weight: 600; margin-top: 10px; color: #2d3436; transition: 0.3s; }
 
         .progress-container { position: relative; width: 100px; height: 100px; }
         .progress-ring { transform: rotate(-90deg); }
         .progress-ring__circle { transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1); stroke-linecap: round; }
         .pct-label { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 22px; font-weight: 600; }
 
-        /* Rest of UI Styles */
         .view-toggle { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; }
         .view-btn { padding: 8px 25px; border-radius: 20px; border: 2px solid var(--primary); background: transparent; color: var(--primary); cursor: pointer; font-weight: 600; transition: 0.3s; }
         .view-btn.active { background: var(--primary); color: white; }
@@ -100,16 +107,23 @@
 
     <div id="auth-screen">
         <div class="auth-card">
-            <h2>Welcome Back</h2>
-            <input type="text" id="username" class="auth-input" placeholder="Callsign">
-            <input type="password" id="password" class="auth-input" placeholder="Password">
+            <h2 id="auth-title">Login</h2>
+            <div class="auth-input-container">
+                <input type="text" id="username" class="auth-input" placeholder="Username">
+            </div>
+            <div class="auth-input-container">
+                <input type="password" id="password" class="auth-input" placeholder="Password">
+                <button type="button" class="pass-toggle-btn" id="togglePassBtn" onclick="togglePassword()">Show</button>
+            </div>
             <button id="authBtn" class="btn-login" onclick="handleAuth()">LOGIN</button>
             <p id="auth-error" style="color:var(--overdue); margin-top:10px; font-size:12px;"></p>
-            <p style="font-size:12px; margin-top:15px;">New operative? <span onclick="toggleAuthMode()" style="color:var(--primary); cursor:pointer; font-weight: 600;">Join Fleet</span></p>
+            <p id="toggle-text" style="font-size:12px; margin-top:15px;">New user? <span onclick="toggleAuthMode()" style="color:var(--primary); cursor:pointer; font-weight: 600;">Sign Up</span></p>
         </div>
     </div>
 
     <div id="app-dashboard">
+        <button class="logout-btn" onclick="logout()">SIGN OUT</button>
+
         <div class="analytics-container">
             <div class="analytics-header">Weekly Fuel Levels</div>
             <div class="analytics-content">
@@ -130,8 +144,8 @@
         </div>
 
         <div class="view-toggle">
-            <button id="view-active" class="view-btn active" onclick="setView('active')">ACTIVE</button>
-            <button id="view-archived" class="view-btn" onclick="setView('archived')">ARCHIVE</button>
+            <button id="view-active" class="view-btn active" onclick="setView('active')">ACTIVE MISSIONS</button>
+            <button id="view-archived" class="view-btn" onclick="setView('archived')">ARCHIVE VAULT</button>
         </div>
 
         <div class="category-bar">
@@ -194,23 +208,43 @@
         }
     });
 
-    window.handleAuth = async () => {
-        const u = document.getElementById('username'), p = document.getElementById('password').value, err = document.getElementById('auth-error'), username = u.value;
-        if (!/^[a-zA-Z0-9_]+$/.test(username)) return err.innerText = "Invalid Callsign.";
-        const email = `${username}@missioncontrol.com`;
-        try {
-            if (isLoginMode) await signInWithEmailAndPassword(auth, email, p);
-            else {
-                const check = await get(ref(db, `usernames/${username}`));
-                if (check.exists()) throw new Error("Taken.");
-                const newUser = await createUserWithEmailAndPassword(auth, email, p);
-                await set(ref(db, `usernames/${username}`), newUser.user.uid);
-            }
-        } catch (e) { err.innerText = e.message; }
+    window.togglePassword = () => {
+        const passInput = document.getElementById('password');
+        const toggleBtn = document.getElementById('togglePassBtn');
+        if (passInput.type === 'password') {
+            passInput.type = 'text';
+            toggleBtn.innerText = 'Hide';
+        } else {
+            passInput.type = 'password';
+            toggleBtn.innerText = 'Show';
+        }
     };
 
-    window.toggleAuthMode = () => { isLoginMode = !isLoginMode; document.getElementById('authBtn').innerText = isLoginMode ? "LOGIN" : "JOIN FLEET"; };
+    window.handleAuth = async () => {
+        const u = document.getElementById('username').value, p = document.getElementById('password').value;
+        if (!u || !p) return;
+        const email = `${u}@missioncontrol.com`;
+        try {
+            if (isLoginMode) await signInWithEmailAndPassword(auth, email, p);
+            else await createUserWithEmailAndPassword(auth, email, p);
+        } catch (e) { document.getElementById('auth-error').innerText = e.message; }
+    };
+
+    window.toggleAuthMode = () => { 
+        isLoginMode = !isLoginMode; 
+        document.getElementById('auth-title').innerText = isLoginMode ? "Login" : "Sign Up";
+        document.getElementById('authBtn').innerText = isLoginMode ? "LOGIN" : "SIGN UP";
+        document.getElementById('toggle-text').innerHTML = isLoginMode ? 
+            'New user? <span onclick="toggleAuthMode()" style="color:var(--primary); cursor:pointer; font-weight: 600;">Sign Up</span>' :
+            'Already have an account? <span onclick="toggleAuthMode()" style="color:var(--primary); cursor:pointer; font-weight: 600;">Login</span>';
+    };
     
+    window.logout = () => {
+        signOut(auth).then(() => {
+            currentUser = null;
+        }).catch((error) => alert("Logout failed: " + error.message));
+    };
+
     window.setView = (view) => {
         currentView = view;
         document.getElementById('view-active').classList.toggle('active', view === 'active');
@@ -285,14 +319,13 @@
             else up.appendChild(li);
 
             const taskDate = new Date(t.date + 'T00:00:00');
-            const diff = Math.round((taskDate - startOfWeekDate) / (1000 * 60 * 60 * 24));
+            const diff = Math.round((taskDate - startOfWeekDate) / 86400000);
             if(diff >= 0 && diff < 7) { 
                 stats[diff]++; 
                 if(t.completed) doneStats[diff]++; 
             }
         });
 
-        // Chart Rendering
         const chart = document.getElementById('weeklyChart');
         chart.innerHTML = `<div class="grid-line" style="bottom: 25%;"></div><div class="grid-line" style="bottom: 50%;"></div><div class="grid-line" style="bottom: 75%;"></div>`;
         const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -312,9 +345,6 @@
                     <div class="day-label" style="${isToday ? 'color:var(--primary); font-weight:bold;' : ''}">${day}</div>
                 </div>`;
             
-            // GROW ANIMATION: 
-            // Use requestAnimationFrame to ensure the 0% height is rendered first, 
-            // then animate to target height.
             requestAnimationFrame(() => {
                 requestAnimationFrame(() => {
                     const pb = document.getElementById(`p-bar-${i}`);
@@ -325,7 +355,6 @@
             });
         });
 
-        // Progress Circle Logic
         const total = filtered.length, done = filtered.filter(t => t.completed).length;
         const pct = total ? (done/total)*100 : 0;
         document.getElementById('progressCircle').style.strokeDashoffset = 264 - (pct / 100 * 264);
