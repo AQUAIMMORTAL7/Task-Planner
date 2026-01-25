@@ -1,0 +1,22 @@
+{
+  "short_name": "MissionCtrl",
+  "name": "Mission Control Pro",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "./index.html",
+  "background_color": "#27ae60",
+  "display": "standalone",
+  "scope": "./",
+  "theme_color": "#27ae60",
+  "description": "Cloud-synced liquid task management dashboard for high-performance operatives."
+}
