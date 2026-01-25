@@ -23,17 +23,25 @@
         
         body { font-family: 'Poppins', sans-serif; background: #f0f2f5; margin: 0; color: var(--text); overflow-x: hidden; }
 
-        /* FIX: Logout Hover Effect */
+        /* Header Navigation */
+        .top-nav {
+            position: fixed; top: 20px; right: 20px; display: flex; gap: 10px; z-index: 1000;
+        }
+
+        .btn-header {
+            padding: 8px 15px; border-radius: 12px; font-weight: 600; font-size: 12px;
+            cursor: pointer; transition: 0.3s; border: 2px solid; text-transform: uppercase;
+        }
+
+        #install-btn {
+            background: #2d3436; color: white; border-color: #2d3436; display: none;
+        }
+        #install-btn:hover { background: #000; border-color: #000; }
+
         .logout-btn { 
-            position: fixed; top: 20px; right: 20px; background: white; color: var(--overdue); 
-            border: 2px solid var(--overdue); padding: 8px 15px; border-radius: 12px; 
-            font-weight: 600; cursor: pointer; transition: 0.3s; z-index: 100; font-size: 12px; 
+            background: white; color: var(--overdue); border-color: var(--overdue);
         }
-        .logout-btn:hover {
-            background: var(--overdue);
-            color: white;
-            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
-        }
+        .logout-btn:hover { background: var(--overdue); color: white; }
 
         #auth-screen { display: flex; height: 100vh; width: 100%; background: var(--bg-gradient); flex-direction: column; align-items: center; justify-content: center; }
         .auth-card { background: var(--glass); padding: 40px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); width: 340px; text-align: center; }
@@ -47,7 +55,7 @@
         #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; display: flex; align-items: center; justify-content: center; z-index: 9999; transition: 0.8s; }
         .hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 
-        #app-dashboard { display: none; padding: 20px; max-width: 1200px; margin: auto; padding-top: 60px; }
+        #app-dashboard { display: none; padding: 20px; max-width: 1200px; margin: auto; padding-top: 80px; }
         
         .analytics-container { background: white; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); overflow: hidden; }
         .analytics-header { background: var(--primary); color: white; padding: 10px 20px; font-weight: 600; text-align: center; font-size: 18px; }
@@ -61,23 +69,16 @@
         
         .bar-planned, .bar-done { 
             width: 100%; position: absolute; bottom: 0; border-radius: 12px 12px 0 0; height: 0; 
-            transition: height 1.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1); 
         }
         .bar-planned { background: var(--primary); opacity: 0.15; }
-        .bar-done { 
-            background: linear-gradient(to top, var(--primary), var(--secondary));
-            animation: liquidSway 4s ease-in-out infinite;
-        }
-
-        @keyframes liquidSway {
-            0%, 100% { border-radius: 12px 12px 0 0; }
-            50% { border-radius: 18px 8px 0 0; }
-        }
+        .bar-done { background: linear-gradient(to top, var(--primary), var(--secondary)); z-index: 2; }
 
         .day-label { font-size: 11px; font-weight: 600; margin-top: 10px; color: #2d3436; }
 
         .progress-container { position: relative; width: 100px; height: 100px; }
         .progress-ring { transform: rotate(-90deg); }
+        #progressCircle { transition: stroke-dashoffset 0.8s ease-in-out; }
         .pct-label { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 22px; font-weight: 600; }
 
         .view-toggle { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; }
@@ -86,33 +87,52 @@
 
         .category-bar { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding: 5px; }
         .cat-tab { padding: 8px 18px; border-radius: 12px; background: white; border: none; cursor: pointer; font-weight: 600; font-size: 12px; white-space: nowrap; transition: 0.3s; }
-        
-        /* FIX: Category Active Background */
         .cat-tab.active { background: #34495e !important; color: white !important; }
 
-        .input-bar { background: white; padding: 20px; border-radius: 20px; display: grid; grid-template-columns: 2fr 1.2fr 1.1fr 1fr auto; gap: 12px; margin-bottom: 25px; border-bottom: 4px solid var(--primary); }
+        /* DEPLOY BAR STYLING */
+        .input-bar { 
+            background: white; padding: 20px; border-radius: 20px; 
+            display: grid; grid-template-columns: 2fr 1.2fr 1.1fr 1fr auto; 
+            gap: 12px; margin-bottom: 25px; border-bottom: 4px solid var(--primary); 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+        
+        .input-bar input, .input-bar select {
+            padding: 12px; border: 1px solid #dfe6e9; border-radius: 10px; outline: none; font-family: inherit;
+        }
+
+        .input-bar button { 
+            background: var(--primary); color: white; border: none; padding: 0 30px; 
+            border-radius: 12px; font-weight: 600; letter-spacing: 1px; cursor: pointer; 
+            transition: all 0.2s ease; box-shadow: 0 4px 0 #219150; 
+        }
+        .input-bar button:hover { background: var(--secondary); transform: translateY(-1px); box-shadow: 0 5px 0 #219150; }
+        .input-bar button:active { transform: translateY(3px); box-shadow: 0 1px 0 #219150; }
+
         .board { display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 20px; }
         .col { background: #ebedef; padding: 18px; border-radius: 24px; min-height: 400px; }
         
-        /* FIX: Standardized Alignment for all columns */
+        /* TASK LIST ITEM STYLING */
         ul { list-style: none; padding: 0; margin: 0; width: 100%; }
-        
         li { 
             background: white; padding: 15px; border-radius: 12px; margin-bottom: 12px; 
-            display: flex; justify-content: space-between; align-items: center;
-            border-left: 6px solid var(--primary); box-sizing: border-box; width: 100%;
+            display: flex; justify-content: space-between; align-items: center; 
+            border-left: 6px solid var(--primary); box-sizing: border-box; width: 100%; 
+            transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        li div { display: flex; align-items: center; gap: 8px; }
+        li div { display: flex; align-items: center; gap: 10px; }
+
+        .btn-icon {
+            background: none; border: none; font-size: 1.2rem; cursor: pointer; 
+            padding: 5px; border-radius: 8px; transition: background 0.2s;
+        }
+        .btn-icon:hover { background: #f1f2f6; }
 
         @media (max-width: 768px) {
             .analytics-content { gap: 10px; padding: 15px; }
-            .y-axis { width: 20px; font-size: 10px; }
-            .chart-area { padding: 0 5px; }
-            .bar-track { width: 20px; }
-            .day-label { font-size: 9px; transform: rotate(-30deg); margin-top: 12px; }
             .input-bar { grid-template-columns: 1fr; }
             .board { grid-template-columns: 1fr; }
-            .logout-btn { top: 10px; right: 10px; padding: 6px 10px; }
+            .top-nav { top: 10px; right: 10px; }
         }
     </style>
 </head>
@@ -120,22 +140,11 @@
 
     <div id="splash-screen"><h2>MISSION CONTROL PRO</h2></div>
 
-    <div id="auth-screen">
-        <div class="auth-card">
-            <h2 id="auth-title">Login</h2>
-            <div class="auth-input-container"><input type="text" id="username" class="auth-input" placeholder="Username"></div>
-            <div class="auth-input-container">
-                <input type="password" id="password" class="auth-input" placeholder="Password">
-                <button type="button" class="pass-toggle-btn" id="togglePassBtn" onclick="togglePassword()">Show</button>
-            </div>
-            <button id="authBtn" class="btn-login" onclick="handleAuth()">LOGIN</button>
-            <p id="auth-error" style="color:var(--overdue); margin-top:10px; font-size:12px;"></p>
-            <p id="toggle-text" style="font-size:12px; margin-top:15px;">New user? <span onclick="toggleAuthMode()" style="color:var(--primary); cursor:pointer; font-weight: 600;">Sign Up</span></p>
-        </div>
-    </div>
-
     <div id="app-dashboard">
-        <button class="logout-btn" onclick="logout()">SIGN OUT</button>
+        <div class="top-nav">
+            <button id="install-btn" class="btn-header">Install App</button>
+            <button class="logout-btn btn-header" onclick="logout()">Sign Out</button>
+        </div>
 
         <div class="analytics-container">
             <div class="analytics-header">Weekly Fuel Levels</div>
@@ -167,7 +176,7 @@
             <button class="cat-tab" onclick="setCategory('urgent', event)">URGENT</button>
         </div>
 
-        <div class="input-bar" id="inputBarContainer">
+        <div class="input-bar">
             <input type="text" id="taskName" placeholder="Mission Name...">
             <select id="taskCat"><option value="work">Work</option><option value="home">Home</option><option value="personal">Personal</option><option value="urgent">Urgent</option></select>
             <input type="date" id="taskDate">
@@ -176,9 +185,23 @@
         </div>
 
         <div class="board">
-            <div class="col"><h3>⏳ PREVIOUS</h3><ul id="list-prev"></ul></div>
-            <div class="col"><h3>🚀 TODAY</h3><ul id="list-today"></ul></div>
-            <div class="col"><h3>📅 UPCOMING</h3><ul id="up-cont"></ul></div>
+            <div class="col"><h3>PREVIOUS</h3><ul id="list-prev"></ul></div>
+            <div class="col"><h3>TODAY</h3><ul id="list-today"></ul></div>
+            <div class="col"><h3>UPCOMING</h3><ul id="up-cont"></ul></div>
+        </div>
+    </div>
+
+    <div id="auth-screen">
+        <div class="auth-card">
+            <h2 id="auth-title">Login</h2>
+            <div class="auth-input-container"><input type="text" id="username" class="auth-input" placeholder="Username"></div>
+            <div class="auth-input-container">
+                <input type="password" id="password" class="auth-input" placeholder="Password">
+                <button type="button" class="pass-toggle-btn" id="togglePassBtn" onclick="togglePassword()">Show</button>
+            </div>
+            <button id="authBtn" class="btn-login" onclick="handleAuth()">LOGIN</button>
+            <p id="auth-error" style="color:var(--overdue); margin-top:10px; font-size:12px;"></p>
+            <p id="toggle-text" style="font-size:12px; margin-top:15px;">New user? <span onclick="toggleAuthMode()" style="color:var(--primary); cursor:pointer; font-weight: 600;">Sign Up</span></p>
         </div>
     </div>
 
@@ -200,14 +223,55 @@
     const db = getDatabase(app);
 
     let currentUser = null, allTasks = [], currentCategory = 'all', currentView = 'active', isLoginMode = true;
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+    // Install Prompt Logic
+    let deferredPrompt;
+    const installBtn = document.getElementById('install-btn');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installBtn.style.display = 'block';
+    });
+
+    installBtn.addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') installBtn.style.display = 'none';
+            deferredPrompt = null;
+        }
+    });
+
+    // Chart Setup
+    const initChart = () => {
+        const chart = document.getElementById('weeklyChart');
+        chart.innerHTML = days.map((day, i) => `
+            <div class="bar-wrapper">
+                <div class="bar-track">
+                    <div id="planned-${i}" class="bar-planned"></div>
+                    <div id="done-${i}" class="bar-done"></div>
+                </div>
+                <div class="day-label">${day}</div>
+            </div>`).join('');
+    };
+    initChart();
 
     const getTodayStr = () => new Date().toLocaleDateString('en-CA');
     document.getElementById('taskDate').min = getTodayStr();
 
     onAuthStateChanged(auth, (user) => {
         document.getElementById('splash-screen').classList.add('hidden');
-        if (user) { currentUser = user; document.getElementById('auth-screen').style.display = 'none'; document.getElementById('app-dashboard').style.display = 'block'; loadData(); }
-        else { document.getElementById('auth-screen').style.display = 'flex'; document.getElementById('app-dashboard').style.display = 'none'; }
+        if (user) { 
+            currentUser = user; 
+            document.getElementById('auth-screen').style.display = 'none'; 
+            document.getElementById('app-dashboard').style.display = 'block'; 
+            loadData(); 
+        } else { 
+            document.getElementById('auth-screen').style.display = 'flex'; 
+            document.getElementById('app-dashboard').style.display = 'none'; 
+        }
     });
 
     window.togglePassword = () => {
@@ -225,7 +289,6 @@
         } catch (e) { document.getElementById('auth-error').innerText = e.message; }
     };
 
-    /* FIX: Auth text and button toggling correctly */
     window.toggleAuthMode = () => { 
         isLoginMode = !isLoginMode; 
         document.getElementById('auth-title').innerText = isLoginMode ? "Login" : "Sign Up"; 
@@ -237,7 +300,6 @@
 
     window.logout = () => signOut(auth);
 
-    /* FIX: Category and View state persistence */
     window.setView = (view, event) => { 
         currentView = view; 
         document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
@@ -283,12 +345,20 @@
         if (currentCategory !== 'all') filtered = filtered.filter(t => t.cat === currentCategory);
 
         const stats = [0,0,0,0,0,0,0], doneStats = [0,0,0,0,0,0,0];
-        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
         filtered.forEach(t => {
-            const li = document.createElement('li'); li.style.borderLeftColor = `var(--cat-${t.cat})`;
-            li.innerHTML = `<div><input type="checkbox" ${t.completed?'checked':''} onchange="toggleTask('${t.id}',${t.completed})"><span>${t.name}</span></div>
-                            <div><button onclick="archiveTask('${t.id}',${t.archived})">${t.archived?'📤':'📥'}</button><button onclick="deleteTask('${t.id}')">×</button></div>`;
+            const li = document.createElement('li'); 
+            li.style.borderLeftColor = `var(--cat-${t.cat})`;
+            
+            li.innerHTML = `
+                <div>
+                    <input type="checkbox" ${t.completed?'checked':''} onchange="toggleTask('${t.id}',${t.completed})">
+                    <span style="${t.completed ? 'text-decoration: line-through; opacity: 0.5;' : ''}">${t.name}</span>
+                </div>
+                <div>
+                    <button class="btn-icon" onclick="archiveTask('${t.id}',${t.archived})" title="Archive">📥</button>
+                    <button class="btn-icon" onclick="deleteTask('${t.id}')" title="Delete">🗑️</button>
+                </div>`;
             
             if (t.date < todayStr) prev.appendChild(li); 
             else if (t.date === todayStr) now.appendChild(li); 
@@ -299,10 +369,13 @@
             if(diff >= 0 && diff < 7) { stats[diff]++; if(t.completed) doneStats[diff]++; }
         });
 
-        const chart = document.getElementById('weeklyChart'); chart.innerHTML = '';
-        const max = Math.max(...stats, 8); document.getElementById('y-max').innerText = max;
-        days.forEach((day, i) => {
-            chart.innerHTML += `<div class="bar-wrapper"><div class="bar-track"><div class="bar-planned" style="height:${(stats[i]/max)*100}%"></div><div class="bar-done" style="height:${(doneStats[i]/max)*100}%"></div></div><div class="day-label">${day}</div></div>`;
+        const max = Math.max(...stats, 8); 
+        document.getElementById('y-max').innerText = max;
+        days.forEach((_, i) => {
+            const pBar = document.getElementById(`planned-${i}`);
+            const dBar = document.getElementById(`done-${i}`);
+            if (pBar) pBar.style.height = `${(stats[i]/max)*100}%`;
+            if (dBar) dBar.style.height = `${(doneStats[i]/max)*100}%`;
         });
 
         const total = filtered.length, done = filtered.filter(t => t.completed).length;
