@@ -23,7 +23,17 @@
         
         body { font-family: 'Poppins', sans-serif; background: #f0f2f5; margin: 0; color: var(--text); overflow-x: hidden; }
 
-        .logout-btn { position: fixed; top: 20px; right: 20px; background: white; color: var(--overdue); border: 2px solid var(--overdue); padding: 8px 15px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; z-index: 100; font-size: 12px; }
+        /* FIX: Logout Hover Effect */
+        .logout-btn { 
+            position: fixed; top: 20px; right: 20px; background: white; color: var(--overdue); 
+            border: 2px solid var(--overdue); padding: 8px 15px; border-radius: 12px; 
+            font-weight: 600; cursor: pointer; transition: 0.3s; z-index: 100; font-size: 12px; 
+        }
+        .logout-btn:hover {
+            background: var(--overdue);
+            color: white;
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+        }
 
         #auth-screen { display: flex; height: 100vh; width: 100%; background: var(--bg-gradient); flex-direction: column; align-items: center; justify-content: center; }
         .auth-card { background: var(--glass); padding: 40px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); width: 340px; text-align: center; }
@@ -75,15 +85,25 @@
         .view-btn.active { background: var(--primary); color: white; }
 
         .category-bar { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding: 5px; }
-        .cat-tab { padding: 8px 18px; border-radius: 12px; background: white; border: none; cursor: pointer; font-weight: 600; font-size: 12px; white-space: nowrap; }
-        .cat-tab.active { background: #34495e; color: white; }
+        .cat-tab { padding: 8px 18px; border-radius: 12px; background: white; border: none; cursor: pointer; font-weight: 600; font-size: 12px; white-space: nowrap; transition: 0.3s; }
+        
+        /* FIX: Category Active Background */
+        .cat-tab.active { background: #34495e !important; color: white !important; }
 
         .input-bar { background: white; padding: 20px; border-radius: 20px; display: grid; grid-template-columns: 2fr 1.2fr 1.1fr 1fr auto; gap: 12px; margin-bottom: 25px; border-bottom: 4px solid var(--primary); }
         .board { display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 20px; }
         .col { background: #ebedef; padding: 18px; border-radius: 24px; min-height: 400px; }
-        li { background: white; padding: 15px; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; border-left: 6px solid var(--primary); }
+        
+        /* FIX: Standardized Alignment for all columns */
+        ul { list-style: none; padding: 0; margin: 0; width: 100%; }
+        
+        li { 
+            background: white; padding: 15px; border-radius: 12px; margin-bottom: 12px; 
+            display: flex; justify-content: space-between; align-items: center;
+            border-left: 6px solid var(--primary); box-sizing: border-box; width: 100%;
+        }
+        li div { display: flex; align-items: center; gap: 8px; }
 
-        /* --- MOBILE UI OVERRIDES (Targeting Screenshot Issues) --- */
         @media (max-width: 768px) {
             .analytics-content { gap: 10px; padding: 15px; }
             .y-axis { width: 20px; font-size: 10px; }
@@ -135,16 +155,16 @@
         </div>
 
         <div class="view-toggle">
-            <button id="view-active" class="view-btn active" onclick="setView('active')">ACTIVE</button>
-            <button id="view-archived" class="view-btn" onclick="setView('archived')">ARCHIVE</button>
+            <button id="view-active" class="view-btn active" onclick="setView('active', event)">ACTIVE</button>
+            <button id="view-archived" class="view-btn" onclick="setView('archived', event)">ARCHIVE</button>
         </div>
 
         <div class="category-bar">
-            <button class="cat-tab active" onclick="setCategory('all')">ALL</button>
-            <button class="cat-tab" onclick="setCategory('work')">WORK</button>
-            <button class="cat-tab" onclick="setCategory('home')">HOME</button>
-            <button class="cat-tab" onclick="setCategory('personal')">PERSONAL</button>
-            <button class="cat-tab" onclick="setCategory('urgent')">URGENT</button>
+            <button class="cat-tab active" onclick="setCategory('all', event)">ALL</button>
+            <button class="cat-tab" onclick="setCategory('work', event)">WORK</button>
+            <button class="cat-tab" onclick="setCategory('home', event)">HOME</button>
+            <button class="cat-tab" onclick="setCategory('personal', event)">PERSONAL</button>
+            <button class="cat-tab" onclick="setCategory('urgent', event)">URGENT</button>
         </div>
 
         <div class="input-bar" id="inputBarContainer">
@@ -158,7 +178,7 @@
         <div class="board">
             <div class="col"><h3>⏳ PREVIOUS</h3><ul id="list-prev"></ul></div>
             <div class="col"><h3>🚀 TODAY</h3><ul id="list-today"></ul></div>
-            <div class="col"><h3>📅 UPCOMING</h3><div id="up-cont"></div></div>
+            <div class="col"><h3>📅 UPCOMING</h3><ul id="up-cont"></ul></div>
         </div>
     </div>
 
@@ -181,25 +201,8 @@
 
     let currentUser = null, allTasks = [], currentCategory = 'all', currentView = 'active', isLoginMode = true;
 
-    // RESTRICT PREVIOUS DATES
     const getTodayStr = () => new Date().toLocaleDateString('en-CA');
     document.getElementById('taskDate').min = getTodayStr();
-
-    // --- PWA AUTO-UPDATE LOGIC ---
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./sw.js').then(reg => {
-                reg.onupdatefound = () => {
-                    const installingWorker = reg.installing;
-                    installingWorker.onstatechange = () => {
-                        if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                            if (confirm("New update available! Refresh now?")) window.location.reload();
-                        }
-                    };
-                };
-            });
-        });
-    }
 
     onAuthStateChanged(auth, (user) => {
         document.getElementById('splash-screen').classList.add('hidden');
@@ -222,11 +225,32 @@
         } catch (e) { document.getElementById('auth-error').innerText = e.message; }
     };
 
-    window.toggleAuthMode = () => { isLoginMode = !isLoginMode; document.getElementById('auth-title').innerText = isLoginMode ? "Login" : "Sign Up"; };
+    /* FIX: Auth text and button toggling correctly */
+    window.toggleAuthMode = () => { 
+        isLoginMode = !isLoginMode; 
+        document.getElementById('auth-title').innerText = isLoginMode ? "Login" : "Sign Up"; 
+        document.getElementById('authBtn').innerText = isLoginMode ? "LOGIN" : "SIGN UP";
+        document.getElementById('toggle-text').innerHTML = isLoginMode ? 
+            `New user? <span onclick="toggleAuthMode()" style="color:var(--primary); cursor:pointer; font-weight: 600;">Sign Up</span>` :
+            `Already have an account? <span onclick="toggleAuthMode()" style="color:var(--primary); cursor:pointer; font-weight: 600;">Login</span>`;
+    };
+
     window.logout = () => signOut(auth);
 
-    window.setView = (view) => { currentView = view; renderUI(); };
-    window.setCategory = (cat) => { currentCategory = cat; renderUI(); };
+    /* FIX: Category and View state persistence */
+    window.setView = (view, event) => { 
+        currentView = view; 
+        document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        renderUI(); 
+    };
+    
+    window.setCategory = (cat, event) => { 
+        currentCategory = cat; 
+        document.querySelectorAll('.cat-tab').forEach(tab => tab.classList.remove('active'));
+        event.target.classList.add('active');
+        renderUI(); 
+    };
 
     function loadData() {
         onValue(ref(db, `users/${currentUser.uid}/tasks`), (snap) => {
@@ -265,7 +289,10 @@
             const li = document.createElement('li'); li.style.borderLeftColor = `var(--cat-${t.cat})`;
             li.innerHTML = `<div><input type="checkbox" ${t.completed?'checked':''} onchange="toggleTask('${t.id}',${t.completed})"><span>${t.name}</span></div>
                             <div><button onclick="archiveTask('${t.id}',${t.archived})">${t.archived?'📤':'📥'}</button><button onclick="deleteTask('${t.id}')">×</button></div>`;
-            if (t.date < todayStr) prev.appendChild(li); else if (t.date === todayStr) now.appendChild(li); else up.appendChild(li);
+            
+            if (t.date < todayStr) prev.appendChild(li); 
+            else if (t.date === todayStr) now.appendChild(li); 
+            else up.appendChild(li);
 
             const tDate = new Date(t.date + 'T00:00:00');
             const diff = Math.round((tDate - new Date(sunStr + 'T00:00:00')) / 86400000);
