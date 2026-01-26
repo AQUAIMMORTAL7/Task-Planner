@@ -19,6 +19,11 @@
 
 ## ✨ Key Features
 
+### 🌓 Dual-Phase Visibility
+* **Stealth Mode (Dark)**: A deep-space aesthetic designed to reduce eye strain during late-night deployments.
+* **Command Mode (Light)**: A high-clarity, daylight-optimized interface featuring crisp glassmorphism.
+* **Persistent Phase**: Utilizes localStorage and CSS variables to ensure your visual preference remains locked across all sessions.
+
 ### 💧 Liquid Analytics
 * **Weekly Fuel Levels:** A custom-built bar graph featuring "Liquid Grow" animations that trigger on every dashboard update.
 * **Elastic Physics:** Bars use custom `cubic-bezier` transitions to bounce and settle like liquid being poured into a vessel.
