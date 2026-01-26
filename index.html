@@ -14,14 +14,50 @@
         :root { 
             --primary: #27ae60; 
             --secondary: #2ecc71;
+            --primary-shadow: #219150;
             --overdue: #e74c3c;
             --bg-gradient: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
             --glass: rgba(255, 255, 255, 0.95);
             --text: #2d3436; 
+            --bg-main: #f0f2f5;
+            --card-bg: #ffffff;
+            --col-bg: #ebedef;
+            --border: #dfe6e9;
             --cat-work: #0984e3; --cat-home: #6c5ce7; --cat-personal: #00b894; --cat-urgent: #d63031;
         }
+
+        [data-theme="dark"] {
+            --primary: #2ecc71; 
+            --secondary: #55efc4;
+            --primary-shadow: #1b9e53;
+            --bg-gradient: linear-gradient(135deg, #1b9e53 0%, #2ecc71 100%);
+            --bg-main: #121212;
+            --card-bg: #1e1e1e;
+            --text: #f5f6fa;
+            --glass: rgba(30, 30, 30, 0.95);
+            --col-bg: #252525;
+            --border: #333333;
+        }
         
-        body { font-family: 'Poppins', sans-serif; background: #f0f2f5; margin: 0; color: var(--text); overflow-x: hidden; }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: var(--bg-main); 
+            margin: 0; 
+            color: var(--text); 
+            overflow-x: hidden; 
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* FIX FOR CALENDAR ICON IN DARK MODE */
+        [data-theme="dark"] input::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+        }
+        
+        /* Modern Date/Time Picker Styling */
+        input[type="date"], input[type="time"] {
+            accent-color: var(--primary);
+        }
 
         /* Header Navigation */
         .top-nav {
@@ -31,24 +67,20 @@
         .btn-header {
             padding: 8px 15px; border-radius: 12px; font-weight: 600; font-size: 12px;
             cursor: pointer; transition: 0.3s; border: 2px solid; text-transform: uppercase;
+            background: var(--card-bg); color: var(--text); border-color: var(--border);
         }
 
-        #install-btn {
-            background: #2d3436; color: white; border-color: #2d3436; display: none;
-        }
-        #install-btn:hover { background: #000; border-color: #000; }
-
-        .logout-btn { 
-            background: white; color: var(--overdue); border-color: var(--overdue);
-        }
+        #install-btn { background: #2d3436; color: white; border-color: #2d3436; display: none; }
+        
+        .logout-btn { color: var(--overdue); border-color: var(--overdue); }
         .logout-btn:hover { background: var(--overdue); color: white; }
 
         #auth-screen { display: flex; height: 100vh; width: 100%; background: var(--bg-gradient); flex-direction: column; align-items: center; justify-content: center; }
         .auth-card { background: var(--glass); padding: 40px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); width: 340px; text-align: center; }
         .auth-input-container { position: relative; width: 100%; margin-bottom: 15px; }
-        .auth-input { width: 100%; padding: 14px; padding-right: 70px; border-radius: 12px; border: 2px solid #ddd; background: #fff; outline: none; box-sizing: border-box; }
+        .auth-input { width: 100%; padding: 14px; padding-right: 70px; border-radius: 12px; border: 2px solid var(--border); background: var(--card-bg); color: var(--text); outline: none; box-sizing: border-box; }
         
-        .pass-toggle-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: #f1f2f6; border: 1px solid #ddd; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; cursor: pointer; color: #636e72; text-transform: uppercase; }
+        .pass-toggle-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: var(--col-bg); border: 1px solid var(--border); padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; cursor: pointer; color: var(--text); }
 
         .btn-login { background: var(--primary); color: white; border: none; padding: 14px; border-radius: 12px; width: 100%; font-weight: 600; cursor: pointer; text-transform: uppercase; }
 
@@ -57,15 +89,15 @@
 
         #app-dashboard { display: none; padding: 20px; max-width: 1200px; margin: auto; padding-top: 80px; }
         
-        .analytics-container { background: white; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); overflow: hidden; }
-        .analytics-header { background: var(--primary); color: white; padding: 10px 20px; font-weight: 600; text-align: center; font-size: 18px; }
+        .analytics-container { background: var(--card-bg); border-radius: 12px; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); overflow: hidden; }
+        .analytics-header { background: var(--primary); color: white; padding: 10px 20px; font-weight: 600; text-align: center; font-size: 18px; transition: background 0.3s; }
         .analytics-content { display: flex; padding: 25px; align-items: flex-end; gap: 30px; }
         
-        .y-axis { display: flex; flex-direction: column; justify-content: space-between; height: 150px; padding-bottom: 25px; color: #636e72; font-size: 11px; width: 30px; }
-        .chart-area { flex-grow: 1; display: flex; justify-content: space-between; align-items: flex-end; height: 150px; border-bottom: 2px solid #dfe6e9; padding: 0 10px; position: relative; }
+        .y-axis { display: flex; flex-direction: column; justify-content: space-between; height: 150px; padding-bottom: 25px; color: var(--text); opacity: 0.7; font-size: 11px; width: 30px; }
+        .chart-area { flex-grow: 1; display: flex; justify-content: space-between; align-items: flex-end; height: 150px; border-bottom: 2px solid var(--border); padding: 0 10px; position: relative; }
         
         .bar-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; z-index: 1; max-width: 50px; }
-        .bar-track { width: 30px; background: #f1f2f6; border-radius: 15px 15px 0 0; position: relative; height: 150px; overflow: hidden; }
+        .bar-track { width: 30px; background: var(--col-bg); border-radius: 15px 15px 0 0; position: relative; height: 150px; overflow: hidden; }
         
         .bar-planned, .bar-done { 
             width: 100%; position: absolute; bottom: 0; border-radius: 12px 12px 0 0; height: 0; 
@@ -74,11 +106,12 @@
         .bar-planned { background: var(--primary); opacity: 0.15; }
         .bar-done { background: linear-gradient(to top, var(--primary), var(--secondary)); z-index: 2; }
 
-        .day-label { font-size: 11px; font-weight: 600; margin-top: 10px; color: #2d3436; }
+        .day-label { font-size: 11px; font-weight: 600; margin-top: 10px; color: var(--text); }
 
         .progress-container { position: relative; width: 100px; height: 100px; }
         .progress-ring { transform: rotate(-90deg); }
-        #progressCircle { transition: stroke-dashoffset 0.8s ease-in-out; }
+        .progress-ring-bg { stroke: var(--col-bg); }
+        #progressCircle { stroke: var(--primary); transition: stroke-dashoffset 0.8s ease-in-out, stroke 0.3s; }
         .pct-label { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 22px; font-weight: 600; }
 
         .view-toggle { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; }
@@ -86,53 +119,43 @@
         .view-btn.active { background: var(--primary); color: white; }
 
         .category-bar { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding: 5px; }
-        .cat-tab { padding: 8px 18px; border-radius: 12px; background: white; border: none; cursor: pointer; font-weight: 600; font-size: 12px; white-space: nowrap; transition: 0.3s; }
+        .cat-tab { padding: 8px 18px; border-radius: 12px; background: var(--card-bg); color: var(--text); border: 1px solid var(--border); cursor: pointer; font-weight: 600; font-size: 12px; white-space: nowrap; transition: 0.3s; }
         .cat-tab.active { background: #34495e !important; color: white !important; }
 
-        /* DEPLOY BAR STYLING */
         .input-bar { 
-            background: white; padding: 20px; border-radius: 20px; 
+            background: var(--card-bg); padding: 20px; border-radius: 20px; 
             display: grid; grid-template-columns: 2fr 1.2fr 1.1fr 1fr auto; 
             gap: 12px; margin-bottom: 25px; border-bottom: 4px solid var(--primary); 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05); transition: border-bottom 0.3s;
         }
         
         .input-bar input, .input-bar select {
-            padding: 12px; border: 1px solid #dfe6e9; border-radius: 10px; outline: none; font-family: inherit;
+            padding: 12px; border: 1px solid var(--border); border-radius: 10px; outline: none; font-family: inherit; background: var(--card-bg); color: var(--text);
         }
 
         .input-bar button { 
             background: var(--primary); color: white; border: none; padding: 0 30px; 
             border-radius: 12px; font-weight: 600; letter-spacing: 1px; cursor: pointer; 
-            transition: all 0.2s ease; box-shadow: 0 4px 0 #219150; 
+            transition: all 0.2s ease; box-shadow: 0 4px 0 var(--primary-shadow); 
         }
-        .input-bar button:hover { background: var(--secondary); transform: translateY(-1px); box-shadow: 0 5px 0 #219150; }
-        .input-bar button:active { transform: translateY(3px); box-shadow: 0 1px 0 #219150; }
 
         .board { display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 20px; }
-        .col { background: #ebedef; padding: 18px; border-radius: 24px; min-height: 400px; }
+        .col { background: var(--col-bg); padding: 18px; border-radius: 24px; min-height: 400px; transition: background 0.3s; }
         
-        /* TASK LIST ITEM STYLING */
         ul { list-style: none; padding: 0; margin: 0; width: 100%; }
         li { 
-            background: white; padding: 15px; border-radius: 12px; margin-bottom: 12px; 
+            background: var(--card-bg); color: var(--text); padding: 15px; border-radius: 12px; margin-bottom: 12px; 
             display: flex; justify-content: space-between; align-items: center; 
             border-left: 6px solid var(--primary); box-sizing: border-box; width: 100%; 
-            transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        li div { display: flex; align-items: center; gap: 10px; }
 
-        .btn-icon {
-            background: none; border: none; font-size: 1.2rem; cursor: pointer; 
-            padding: 5px; border-radius: 8px; transition: background 0.2s;
-        }
-        .btn-icon:hover { background: #f1f2f6; }
+        .btn-icon { background: none; border: none; font-size: 1.2rem; cursor: pointer; padding: 5px; border-radius: 8px; color: var(--text); opacity: 0.8; }
+        .btn-icon:hover { background: var(--col-bg); opacity: 1; }
 
         @media (max-width: 768px) {
-            .analytics-content { gap: 10px; padding: 15px; }
             .input-bar { grid-template-columns: 1fr; }
             .board { grid-template-columns: 1fr; }
-            .top-nav { top: 10px; right: 10px; }
         }
     </style>
 </head>
@@ -142,6 +165,7 @@
 
     <div id="app-dashboard">
         <div class="top-nav">
+            <button id="theme-toggle" class="btn-header" onclick="toggleTheme()">🌙 Mode</button>
             <button id="install-btn" class="btn-header">Install App</button>
             <button class="logout-btn btn-header" onclick="logout()">Sign Out</button>
         </div>
@@ -154,8 +178,8 @@
                 <div class="side-meter">
                     <div class="progress-container">
                         <svg class="progress-ring" width="100" height="100">
-                            <circle stroke="#f1f2f6" stroke-width="10" fill="transparent" r="42" cx="50" cy="50"/>
-                            <circle id="progressCircle" stroke="var(--primary)" stroke-width="10" fill="transparent" r="42" cx="50" cy="50" style="stroke-dasharray: 264; stroke-dashoffset: 264;"/>
+                            <circle class="progress-ring-bg" stroke-width="10" fill="transparent" r="42" cx="50" cy="50"/>
+                            <circle id="progressCircle" stroke-width="10" fill="transparent" r="42" cx="50" cy="50" style="stroke-dasharray: 264; stroke-dashoffset: 264;"/>
                         </svg>
                         <div id="pctLabel" class="pct-label">0%</div>
                     </div>
@@ -201,7 +225,7 @@
             </div>
             <button id="authBtn" class="btn-login" onclick="handleAuth()">LOGIN</button>
             <p id="auth-error" style="color:var(--overdue); margin-top:10px; font-size:12px;"></p>
-            <p id="toggle-text" style="font-size:12px; margin-top:15px;">New user? <span onclick="toggleAuthMode()" style="color:var(--primary); cursor:pointer; font-weight: 600;">Sign Up</span></p>
+            <p id="toggle-text" style="font-size:12px; margin-top:15px; color:#2d3436;">New user? <span onclick="toggleAuthMode()" style="color:var(--primary); cursor:pointer; font-weight: 600;">Sign Up</span></p>
         </div>
     </div>
 
@@ -225,16 +249,31 @@
     let currentUser = null, allTasks = [], currentCategory = 'all', currentView = 'active', isLoginMode = true;
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
+    // --- ENHANCED THEME LOGIC ---
+    window.toggleTheme = () => {
+        const current = document.documentElement.getAttribute('data-theme');
+        const target = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', target);
+        localStorage.setItem('mission-theme', target);
+        document.getElementById('theme-toggle').innerText = target === 'dark' ? '☀️ Light' : '🌙 Dark';
+    };
+
+    const savedTheme = localStorage.getItem('mission-theme');
+    if (savedTheme) {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        window.addEventListener('DOMContentLoaded', () => {
+             document.getElementById('theme-toggle').innerText = savedTheme === 'dark' ? '☀️ Light' : '🌙 Dark';
+        });
+    }
+
     // Install Prompt Logic
     let deferredPrompt;
     const installBtn = document.getElementById('install-btn');
-
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
         installBtn.style.display = 'block';
     });
-
     installBtn.addEventListener('click', async () => {
         if (deferredPrompt) {
             deferredPrompt.prompt();
@@ -349,16 +388,10 @@
         filtered.forEach(t => {
             const li = document.createElement('li'); 
             li.style.borderLeftColor = `var(--cat-${t.cat})`;
-            
-            li.innerHTML = `
-                <div>
-                    <input type="checkbox" ${t.completed?'checked':''} onchange="toggleTask('${t.id}',${t.completed})">
-                    <span style="${t.completed ? 'text-decoration: line-through; opacity: 0.5;' : ''}">${t.name}</span>
-                </div>
-                <div>
-                    <button class="btn-icon" onclick="archiveTask('${t.id}',${t.archived})" title="Archive">📥</button>
-                    <button class="btn-icon" onclick="deleteTask('${t.id}')" title="Delete">🗑️</button>
-                </div>`;
+            li.innerHTML = `<div><input type="checkbox" ${t.completed?'checked':''} onchange="toggleTask('${t.id}',${t.completed})">
+                <span style="${t.completed ? 'text-decoration: line-through; opacity: 0.5;' : ''}">${t.name}</span></div>
+                <div><button class="btn-icon" onclick="archiveTask('${t.id}',${t.archived})" title="Archive">📥</button>
+                <button class="btn-icon" onclick="deleteTask('${t.id}')" title="Delete">🗑️</button></div>`;
             
             if (t.date < todayStr) prev.appendChild(li); 
             else if (t.date === todayStr) now.appendChild(li); 
