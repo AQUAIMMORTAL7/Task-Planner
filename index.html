@@ -48,18 +48,15 @@
             transition: background 0.3s, color 0.3s;
         }
 
-        /* FIX FOR CALENDAR ICON IN DARK MODE */
         [data-theme="dark"] input::-webkit-calendar-picker-indicator {
             filter: invert(1);
             cursor: pointer;
         }
         
-        /* Modern Date/Time Picker Styling */
         input[type="date"], input[type="time"] {
             accent-color: var(--primary);
         }
 
-        /* Header Navigation */
         .top-nav {
             position: fixed; top: 20px; right: 20px; display: flex; gap: 10px; z-index: 1000;
         }
@@ -165,13 +162,13 @@
 
     <div id="app-dashboard">
         <div class="top-nav">
-            <button id="theme-toggle" class="btn-header" onclick="toggleTheme()">🌙 Mode</button>
+            <button id="theme-toggle" class="btn-header" onclick="toggleTheme()">🌙 Dark</button>
             <button id="install-btn" class="btn-header">Install App</button>
             <button class="logout-btn btn-header" onclick="logout()">Sign Out</button>
         </div>
 
         <div class="analytics-container">
-            <div class="analytics-header">Weekly Fuel Levels</div>
+            <div id="status-header" class="analytics-header">Weekly Fuel Levels</div>
             <div class="analytics-content">
                 <div class="y-axis"><span id="y-max">8</span><span>6</span><span>4</span><span>2</span><span>0</span></div>
                 <div class="chart-area" id="weeklyChart"></div>
@@ -249,7 +246,26 @@
     let currentUser = null, allTasks = [], currentCategory = 'all', currentView = 'active', isLoginMode = true;
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-    // --- ENHANCED THEME LOGIC ---
+    // Service Worker Registration
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js').then(reg => console.log('SW Registered'));
+        });
+    }
+
+    // --- Connection Monitoring (Offline Sync Logic) ---
+    const connectedRef = ref(db, ".info/connected");
+    onValue(connectedRef, (snap) => {
+        const header = document.getElementById('status-header');
+        if (snap.val() === true) {
+            header.style.background = "var(--primary)";
+            header.innerText = "Weekly Fuel Levels (Online)";
+        } else {
+            header.style.background = "#e67e22"; // Orange for Sync Pending
+            header.innerText = "Weekly Fuel Levels (Sync Pending...)";
+        }
+    });
+
     window.toggleTheme = () => {
         const current = document.documentElement.getAttribute('data-theme');
         const target = current === 'dark' ? 'light' : 'dark';
@@ -266,7 +282,6 @@
         });
     }
 
-    // Install Prompt Logic
     let deferredPrompt;
     const installBtn = document.getElementById('install-btn');
     window.addEventListener('beforeinstallprompt', (e) => {
@@ -283,7 +298,6 @@
         }
     });
 
-    // Chart Setup
     const initChart = () => {
         const chart = document.getElementById('weeklyChart');
         chart.innerHTML = days.map((day, i) => `
@@ -364,8 +378,10 @@
     window.addTask = () => {
         const n = document.getElementById('taskName').value, d = document.getElementById('taskDate').value, c = document.getElementById('taskCat').value;
         if(!n || !d) return alert("Required fields missing.");
+        // Firebase automatically queues this if offline
         set(ref(db, `users/${currentUser.uid}/tasks/${Date.now()}`), { name: n, cat: c, date: d, completed: false, archived: false });
         document.getElementById('taskName').value = '';
+        document.getElementById('taskName').focus();
     };
 
     window.toggleTask = (id, cur) => update(ref(db, `users/${currentUser.uid}/tasks/${id}`), { completed: !cur });
